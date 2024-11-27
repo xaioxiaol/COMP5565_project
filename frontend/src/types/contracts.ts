@@ -15,6 +15,7 @@ export interface Certificate {
     ipfsHash: string;
     status: CertificateStatus;
     isTransferable: boolean;
+    timestamp: number;  // Add this line
 }
 
 export interface CertificateHistory {

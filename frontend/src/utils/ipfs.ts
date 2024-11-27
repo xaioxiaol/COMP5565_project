@@ -48,4 +48,8 @@ export const ipfsService = {
     getGatewayURL(hash: string): string {
         return `http://localhost:8080/ipfs/${hash}`;
     }
+};
+
+export const getFromIPFS = async (ipfsHash: string) => {
+    return await ipfsService.getJSON(ipfsHash);
 }; 

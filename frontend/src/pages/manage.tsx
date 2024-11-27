@@ -5,6 +5,7 @@ import { uploadToIPFS } from '@/utils/ipfs';
 import toast from 'react-hot-toast';
 import { CertificateMetadata, IPFSResponse } from '@/types/certificate';
 import { ipfsService } from '@/utils/ipfs';
+import { ethers } from 'ethers';
 
 export default function ManagePage() {
     const { provider, account } = useWeb3();
@@ -30,7 +31,7 @@ export default function ManagePage() {
             setCertificateData(prev => ({
                 ...prev,
                 [parent]: {
-                    ...prev[parent as keyof typeof prev],
+                    ...(prev[parent as keyof typeof prev] as Record<string, string>),
                     [child]: value
                 }
             }));
@@ -85,9 +86,13 @@ export default function ManagePage() {
             
             // 创建区块链上的证书
             const tx = await createCertificate(provider, ipfsHash);
-            await tx.wait();
-            
-            toast.success('证书创建成功');
+            const receipt = await tx.wait();
+
+            // 从事件日志中获取证书ID
+            const event = receipt.events?.find((e: ethers.Event) => e.event === 'CertificateCreated');
+            const certificateId = event?.args?.id;
+
+            toast.success(`证书创建成功，ID: ${certificateId}`);
             // 重置表单
             setCertificateData({
                 name: '',

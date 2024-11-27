@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useWeb3 } from '@/context/Web3Context';
 import { getCertificateHistory } from '@/utils/contracts';
 import { ipfsService } from '@/utils/ipfs';
+import { getCertificateStatus } from '../utils/certificates';
 
 interface CertificateHistoryProps {
     certificateId: number;
@@ -19,6 +20,7 @@ export default function CertificateHistory({ certificateId }: CertificateHistory
     }, [provider, certificateId]);
 
     const loadHistory = async () => {
+        if (!provider) return;
         setLoading(true);
         try {
             const history = await getCertificateHistory(provider, certificateId);

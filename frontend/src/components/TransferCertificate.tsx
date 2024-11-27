@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ethers } from 'ethers';
 import { useWeb3 } from '@/context/Web3Context';
 import toast from 'react-hot-toast';
+import { getContract } from '@/utils/contracts';  // Adjust the path based on your project structure
 
 interface TransferCertificateProps {
     certificateId: number;

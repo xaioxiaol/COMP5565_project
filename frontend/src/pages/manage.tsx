@@ -51,6 +51,15 @@ export default function ManagePage() {
 
         setLoading(true);
         try {
+            // 检查网络
+            const network = await provider.getNetwork();
+            console.log('当前网络:', network);
+            
+            if (network.chainId !== 31337) { // Hardhat 的 chainId
+                toast.error('请切换到本地测试网络');
+                return;
+            }
+
             // 上传图片到IPFS
             const imageFile = certificateImages.main;
             let imageHash = '';

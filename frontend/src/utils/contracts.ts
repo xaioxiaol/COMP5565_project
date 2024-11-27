@@ -1,23 +1,15 @@
+import toast from 'react-hot-toast';
 import { ethers } from 'ethers';
-import { DiamondCertificateContract } from '@/types/contracts';
-import DiamondCertificateABI from '../contracts/DiamondCertificate.json';
+import { CONFIG } from '@/config';
+import DiamondCertificateArtifact from '../../../backend/artifacts/contracts/DiamondCertificate.sol/DiamondCertificate.json';
 
-export const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!;
-
-export const ROLES = {
-    MINER: ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MINER_ROLE")),
-    CUTTER: ethers.utils.keccak256(ethers.utils.toUtf8Bytes("CUTTER_ROLE")),
-    CERTIFIER: ethers.utils.keccak256(ethers.utils.toUtf8Bytes("CERTIFIER_ROLE")),
-    MANUFACTURER: ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MANUFACTURER_ROLE"))
-};
-
-export function getContract(provider: ethers.providers.Web3Provider): DiamondCertificateContract {
+export function getContract(provider: ethers.providers.Web3Provider) {
     const signer = provider.getSigner();
     return new ethers.Contract(
-        CONTRACT_ADDRESS,
-        DiamondCertificateABI,
+        CONFIG.CONTRACT_ADDRESS,
+        DiamondCertificateArtifact.abi,
         signer
-    ) as DiamondCertificateContract;
+    );
 }
 
 export async function createCertificate(
@@ -25,7 +17,28 @@ export async function createCertificate(
     ipfsHash: string
 ): Promise<ethers.ContractTransaction> {
     const contract = getContract(provider);
-    return await contract.createCertificate(ipfsHash);
+    const signer = provider.getSigner();
+    const address = await signer.getAddress();
+    
+    // 重置 nonce
+    const nonce = await provider.getTransactionCount(address, 'latest');
+    console.log('当前 nonce:', nonce);
+    
+    try {
+        const tx = await contract.createCertificate(ipfsHash, {
+            nonce: nonce,
+            gasLimit: 500000 // 设置固定的 gas 限制
+        });
+        return tx;
+    } catch (error: any) {
+        console.error('创建证书错误:', error);
+        if (error.code === 'NONCE_EXPIRED') {
+            toast.error('交易 nonce 错误，请刷新页面重试');
+        } else {
+            toast.error('创建证书失败');
+        }
+        throw error;
+    }
 }
 
 export async function updateCertificateStatus(
@@ -71,7 +84,7 @@ export async function getCertificateHistory(
     const [timestamps, operators, statuses, ipfsHashes] = 
         await contract.getCertificateHistory(certificateId);
     
-    return timestamps.map((timestamp, index) => ({
+    return timestamps.map((timestamp: ethers.BigNumber, index: number) => ({
         timestamp: timestamp.toNumber(),
         operator: operators[index],
         status: statuses[index],
@@ -86,4 +99,13 @@ export async function checkRole(
 ): Promise<boolean> {
     const contract = getContract(provider);
     return await contract.hasRole(role, account);
+}
+
+export async function grantManufacturerRole(
+    provider: ethers.providers.Web3Provider,
+    address: string
+): Promise<ethers.ContractTransaction> {
+    const contract = getContract(provider);
+    const MANUFACTURER_ROLE = await contract.MANUFACTURER_ROLE();
+    return contract.grantRole(MANUFACTURER_ROLE, address);
 } 

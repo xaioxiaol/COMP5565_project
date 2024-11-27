@@ -13,4 +13,10 @@ services:
     environment:
       - IPFS_PROFILE=server
       - IPFS_PATH=/data/ipfs
+    command: 
+      - "daemon"
+      - "--migrate=true"
+      - "--agent-version-suffix=docker"
+      - "--enable-gc=true"
+      - "--api=/ip4/0.0.0.0/tcp/5001"
     restart: unless-stopped 

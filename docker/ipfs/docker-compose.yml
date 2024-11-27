@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  ipfs:
+    image: ipfs/kubo:latest
+    ports:
+      - "4001:4001"  # IPFS swarm
+      - "5001:5001"  # IPFS API
+      - "8080:8080"  # IPFS Gateway
+    volumes:
+      - ./data:/data/ipfs
+      - ./export:/export
+    environment:
+      - IPFS_PROFILE=server
+      - IPFS_PATH=/data/ipfs
+    restart: unless-stopped 

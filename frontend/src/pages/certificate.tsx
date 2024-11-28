@@ -1,172 +1,16 @@
 "use client";
 import React, { useState } from "react";
-import Certificate from "../types/certificate"; // Import Certificate type
+import Certificate from "../types/Certificate"; // Import Certificate type
 import { CONFIG } from "@/config";
 import { ethers } from "ethers";
 import { ipfsService } from "@/utils/ipfs";
+import { certificateController } from "../controllers/CertificateController";
 
 export default function page() {
-  const contractAddress = CONFIG.CONTRACT_ADDRESS;
-  const abi = [
-    {
-      inputs: [
-        {
-          internalType: "string",
-          name: "uniqueId",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "ipfsHash",
-          type: "string",
-        },
-      ],
-      name: "addAuditRecord",
-      outputs: [],
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "string",
-          name: "uniqueId",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "ipfsHash",
-          type: "string",
-        },
-      ],
-      name: "addCertificate",
-      outputs: [],
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "string",
-          name: "uniqueId",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "ipfsHash",
-          type: "string",
-        },
-      ],
-      name: "addOwnership",
-      outputs: [],
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "string",
-          name: "uniqueId",
-          type: "string",
-        },
-      ],
-      name: "getAuditRecords",
-      outputs: [
-        {
-          internalType: "string[]",
-          name: "",
-          type: "string[]",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "string",
-          name: "uniqueId",
-          type: "string",
-        },
-      ],
-      name: "getCertificates",
-      outputs: [
-        {
-          internalType: "string[]",
-          name: "",
-          type: "string[]",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "string",
-          name: "uniqueId",
-          type: "string",
-        },
-      ],
-      name: "getOwnerships",
-      outputs: [
-        {
-          internalType: "string[]",
-          name: "",
-          type: "string[]",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
-  ];
-
-  async function getContract() {
-    // 检查是否安装了 MetaMask 或其他支持的以太坊钱包
-    if (!window.ethereum) {
-      throw new Error("MetaMask 未安装，请安装后重试！");
-    }
-
-    // 连接 MetaMask 并获取钱包地址
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-
-    // 创建合约对象
-    const contract = new ethers.Contract(contractAddress, abi, signer);
-    return contract;
-  }
-
-  // 向智能合约添加审计记录
-  async function addCertificateInContract(uniqueId: string, ipfsHash: string) {
-    try {
-      const contract = await getContract(); // 获取合约实例
-
-      // 调用合约的 addAuditRecord 方法
-      const tx = await contract.addCertificate(uniqueId, ipfsHash);
-      console.log("正在提交交易，请稍后...", tx.hash);
-
-      // 等待交易完成，链上确认
-      await tx.wait();
-      console.log("交易完成，已成功添加审计记录！", tx.hash);
-    } catch (error) {
-      console.error("添加审计记录失败:", error);
-      throw error;
-    }
-  }
-
-  // 向智能合约检索审计记录
-  async function getCertificateInContract(uniqueId: string) {
-    try {
-      const contract = await getContract(); // 获取合约实例
-      const records = await contract.getCertificates(uniqueId);
-      return records;
-    } catch (error) {
-      console.error("添加审计记录失败:", error);
-      throw error;
-    }
-  }
+  //   const [certificateController] = useState();
 
   const createCertificate = async (certificate: Certificate) => {
+    console.log(certificate);
     if (
       !certificate.certificateId ||
       !certificate.uniqueId ||
@@ -174,38 +18,24 @@ export default function page() {
       !certificate.state ||
       !certificate.price ||
       !certificate.description ||
-      !certificate.productionDate ||
-      !certificate.signature
+      !certificate.productionDate
     ) {
       alert("请填写所有字段！");
       return;
     }
 
     try {
-      const certData = {
-        certificateId: certificate.certificateId,
-        uniqueId: certificate.uniqueId,
-        batchCode: certificate.batchCode,
-        state: certificate.state,
-        price: certificate.price,
-        description: certificate.description,
-        productionDate: certificate.productionDate,
-        signature: certificate.signature,
-        timestamp: new Date().toISOString(),
-      };
+      const certData = certificate.toJSON();
 
-      // 上传数据到 IPFS
-      const ipfsHash = await ipfsService.uploadJSON(certData);
-      await addCertificateInContract(certData.uniqueId, ipfsHash);
-      alert("审计记录已成功添加到 IPFS！");
-      setCertificate(new Certificate("", "", "", "", "", "", new Date(), "")); // 清空字段
+      await certificateController.addCertificate(certData);
+      alert("证书已成功添加！");
+      setCertificate(new Certificate("", "", "", "", "", "", new Date(), ""));
     } catch (error) {
       console.error(error);
-      alert("添加审计记录到 IPFS 失败！");
+      alert("添加证书失败！");
     }
   };
 
-  // 查询审计记录
   const fetchCertificate = async (uniqueIdForFetch: string) => {
     if (!uniqueIdForFetch) {
       alert("请输入唯一 ID！");
@@ -213,14 +43,16 @@ export default function page() {
     }
 
     try {
-      const records = await getCertificateInContract(uniqueIdForFetch);
-      const record = await ipfsService.getJSON(records[0]);
-      console.log(record);
-      setRetrievedCertificate(Certificate.fromJSON(JSON.parse(record)));
-      setFetchStatus("检索成功！");
+      const record = await certificateController.getCertificate(
+        uniqueIdForFetch
+      );
+      //   const record = await ipfsService.getJSON(records[0]);
+      setRetrievedCertificate(Certificate.fromJSON(JSON.stringify(record)));
+      console.log(retrievedCertificate);
+      if (retrievedCertificate?.certificateId) setFetchStatus("检索成功！");
     } catch (error) {
       console.error(error);
-      alert("查询审计记录失败！");
+      alert("查询证书失败！");
     }
   };
 
@@ -251,7 +83,7 @@ export default function page() {
       field === "price" ? (value as string) : certificate.price,
       field === "description" ? (value as string) : certificate.description,
       field === "productionDate"
-        ? (value as unknown as Date)
+        ? new Date(value as string)
         : certificate.productionDate,
       field === "signature" ? (value as string) : certificate.signature
     );
@@ -274,8 +106,9 @@ export default function page() {
     try {
       setFetchStatus("正在检索...");
       await fetchCertificate(uniqueIdForFetch);
-    //   setRetrievedCertificate(certificate);
-      setFetchStatus("检索成功！");
+      //   setRetrievedCertificate(certificate);
+      if (uniqueIdForFetch) setFetchStatus("检索成功！");
+      else setFetchStatus("检索为空！");
     } catch (error) {
       setFetchStatus("检索失败，请检查 uniqueId");
     }
@@ -336,13 +169,14 @@ export default function page() {
               type="date"
               placeholder="Production Date"
               value={
-                certificate.productionDate
+                certificate.productionDate instanceof Date
                   ? certificate.productionDate.toISOString().split("T")[0]
                   : ""
               }
-              onChange={(e) =>
-                handleInputChange("productionDate", e.target.value)
-              }
+              onChange={(e) => {
+                const dateValue = e.target.value;
+                handleInputChange("productionDate", dateValue);
+              }}
             />
             <textarea
               className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2 md:col-span-2"
@@ -444,15 +278,30 @@ export default function page() {
                       Production Date
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {retrievedCertificate.productionDate.toLocaleDateString()}
+                      {retrievedCertificate.productionDate.toLocaleString()}
                     </td>
                   </tr>
                   <tr>
                     <td className="px-6 py-4 whitespace-nowrap bg-gray-50 text-sm font-medium text-gray-900">
                       Signature
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {retrievedCertificate.signature}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex justify-between items-center">
+                      {retrievedCertificate.signature.slice(0, 16) + "..."}
+                      <button
+                        onClick={async () => {
+                          try {
+                            const result = await certificateController.verifyCertificate(
+                              retrievedCertificate
+                            );
+                            alert(result ? "签名验证成功！" : "签名验证失败！");
+                          } catch (error: unknown) {
+                            alert("验证过程出错：" + (error instanceof Error ? error.message : String(error)));
+                          }
+                        }}
+                        className="ml-4 bg-green-600 text-white py-1 px-3 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                      >
+                        验证签名
+                      </button>
                     </td>
                   </tr>
                 </tbody>

@@ -9,7 +9,7 @@ export class AuditTrailController {
 
     constructor() {
         this.contractAddress = CONFIG.CONTRACT_ADDRESS;
-        this.abi = this.abi = [
+        this.abi = [
             {
                 inputs: [
                     {

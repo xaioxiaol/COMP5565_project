@@ -1,4 +1,4 @@
-class Certificate {
+export default class Certificate {
     constructor(
       public certificateId: string,
       public uniqueId: string,
@@ -6,11 +6,19 @@ class Certificate {
       public state: string,
       public price: string,
       public description: string,
-      public productionDate: Date,
+      public productionDate: Date | string,
       public signature: string
-    ) {}
+    ) {
+      if (!(this.productionDate instanceof Date)) {
+        this.productionDate = new Date(this.productionDate);
+      }
+    }
   
-    toJSON(): object {
+    toJSON() {
+      const date = this.productionDate instanceof Date ? 
+        this.productionDate : 
+        new Date(this.productionDate);
+
       return {
         certificateId: this.certificateId,
         uniqueId: this.uniqueId,
@@ -18,22 +26,22 @@ class Certificate {
         state: this.state,
         price: this.price,
         description: this.description,
-        productionDate: this.productionDate.toISOString(),
-        signature: this.signature,
+        productionDate: date.toISOString().split('T')[0],
+        signature: this.signature
       };
     }
   
     static fromJSON(json: any): Certificate {
+      const data = typeof json === 'string' ? JSON.parse(json) : json;
       return new Certificate(
-        json.certificateId,
-        json.uniqueId,
-        json.batchCode,
-        json.state,
-        json.price,
-        json.description,
-        new Date(json.productionDate),
-        json.signature
+        data.certificateId,
+        data.uniqueId,
+        data.batchCode,
+        data.state,
+        data.price,
+        data.description,
+        new Date(data.productionDate),
+        data.signature
       );
     }
 }
-export default Certificate;

@@ -58,66 +58,7 @@ export default function HomePage() {
                   </Link>
                 </div>
               </div>
-<<<<<<< Updated upstream
-              <p className="text-gray-600 mb-4">
-                Provides manufacturers with complete certificate management capabilities, including creation, renewal and transfer.
-              </p>
-              <Link
-                href="/certificate"
-                className={`inline-flex items-center px-6 py-2 rounded-md transition-all duration-300 shadow-md hover:shadow-lg ${
-                  isConnected
-                    ? "bg-gradient-to-r from-purple-500 to-purple-600 text-white hover:from-purple-600 hover:to-purple-700"
-                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                }`}
-              >
-                Enter management
-              </Link>
-            </div>
-
-            {/* 功能卡片 3 */}
-            <div className="bg-white rounded-lg shadow-lg p-6 transform transition-all duration-300 hover:scale-105 hover:shadow-xl border border-gray-100">
-              <div className="flex items-center mb-4">
-                <span className="text-4xl mr-3">📋</span>
-                <div className="text-2xl font-semibold">Full traceability</div>
-              </div>
-              <p className="text-gray-600 mb-4">
-                From mining to production, the entire life cycle of a diamond is recorded to ensure transparency.
-              </p>
-              <Link
-                href="/auditTrails"
-                className={`inline-flex items-center px-6 py-2 rounded-md transition-all duration-300 shadow-md hover:shadow-lg ${
-                  isConnected
-                    ? "bg-gradient-to-r from-pink-500 to-pink-600 text-white hover:from-pink-600 hover:to-pink-700"
-                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                }`}
-              >
-                Audit records
-              </Link>
-            </div>
-
-            {/* 功能卡片 4 */}
-            <div className="bg-white rounded-lg shadow-lg p-6 transform transition-all duration-300 hover:scale-105 hover:shadow-xl border border-gray-100">
-              <div className="flex items-center mb-4">
-                <span className="text-4xl mr-3">🔄</span>
-                <div className="text-2xl font-semibold">Transfer of ownership</div>
-              </div>
-              <p className="text-gray-600 mb-4">
-                Transferring Jewelry Certificate Ownership
-              </p>
-              <Link
-                href="/ownership"
-                className={`inline-flex items-center px-6 py-2 rounded-md transition-all duration-300 shadow-md hover:shadow-lg ${
-                  isConnected
-                    ? "bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700"
-                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                }`}
-              >
-                Transferring Ownership
-              </Link>
-            </div>
-=======
             ))}
->>>>>>> Stashed changes
           </div>
         </div>
       </div>

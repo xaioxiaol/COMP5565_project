@@ -35,7 +35,7 @@ export const ipfsService = {
         }
     },
 
-    async getJSON(cid: string): Promise<any> {
+    async getJSON(cid: string): Promise<string> {
         try {
             // 用于存储从 IPFS 中读取的数据块
             const dataChunks = [];
@@ -48,7 +48,7 @@ export const ipfsService = {
             // 合并所有数据块成为完成的数据 (Buffer 或 JSON String)
             const completeData = Buffer.concat(dataChunks).toString();
 
-            console.log('从 IPFS 获取到的数据:', completeData);
+            // console.log('从 IPFS 获取到的数据:', completeData);
 
             return completeData; // 返回完整数据
         } catch (error) {

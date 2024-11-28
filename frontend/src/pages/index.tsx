@@ -75,7 +75,7 @@ export default function HomePage() {
                 转移珠宝证书所有权
               </p>
               <Link
-                href="/auditTrails"
+                href="/ownership"
                 className={`inline-block px-4 py-2 rounded-md ${
                   isConnected
                     ? "bg-blue-500 text-white hover:bg-blue-600"

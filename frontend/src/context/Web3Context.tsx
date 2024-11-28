@@ -44,16 +44,16 @@ export function Web3Provider({ children }: { children: ReactNode }) {
     const connect = async () => {
         try {
             if (!provider) {
-                toast.error('请安装MetaMask钱包');
+                toast.error('Please install MetaMask wallet');
                 return;
             }
 
             const accounts = await provider.send('eth_requestAccounts', []);
             setAccount(accounts[0]);
             setIsConnected(true);
-            toast.success('钱包连接成功');
+            toast.success('Wallet connection successful');
         } catch (error) {
-            toast.error('连接钱包失败');
+            toast.error('Failed to connect to wallet');
             console.error(error);
         }
     };

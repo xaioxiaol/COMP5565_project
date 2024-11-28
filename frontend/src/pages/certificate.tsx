@@ -20,7 +20,7 @@ export default function page() {
       !certificate.description ||
       !certificate.productionDate
     ) {
-      alert("请填写所有字段！");
+      alert("Please fill in all fields!");
       return;
     }
 
@@ -28,17 +28,17 @@ export default function page() {
       const certData = certificate.toJSON();
 
       await certificateController.addCertificate(certData);
-      alert("证书已成功添加！");
+      alert("Certificate added successfully!");
       setCertificate(new Certificate("", "", "", "", "", "", new Date(), ""));
     } catch (error) {
       console.error(error);
-      alert("添加证书失败！");
+      alert("Failed to add certificate!");
     }
   };
 
   const fetchCertificate = async (uniqueIdForFetch: string) => {
     if (!uniqueIdForFetch) {
-      alert("请输入唯一 ID！");
+      alert("Please enter Unique ID!");
       return;
     }
 
@@ -49,10 +49,10 @@ export default function page() {
       //   const record = await ipfsService.getJSON(records[0]);
       setRetrievedCertificate(Certificate.fromJSON(JSON.stringify(record)));
       console.log(retrievedCertificate);
-      if (retrievedCertificate?.certificateId) setFetchStatus("检索成功！");
+      if (retrievedCertificate?.certificateId) setFetchStatus("Retrieved successfully!");
     } catch (error) {
       console.error(error);
-      alert("查询证书失败！");
+      alert("Failed to query certificate!");
     }
   };
 
@@ -93,24 +93,24 @@ export default function page() {
   // 提交上传 Certificate
   const handleUploadCertificate = async () => {
     try {
-      setUploadStatus("上传中...");
+      setUploadStatus("Uploading...");
       const ipfsHash = await createCertificate(certificate);
-      setUploadStatus(`上传成功！CID: ${ipfsHash}`);
+      setUploadStatus(`Upload successful! CID: ${ipfsHash}`);
     } catch (error) {
-      setUploadStatus("上传失败，请重试");
+      setUploadStatus("Upload failed, please try again");
     }
   };
 
   // 检索 Certificate
   const handleFetchCertificate = async () => {
     try {
-      setFetchStatus("正在检索...");
+      setFetchStatus("Searching...");
       await fetchCertificate(uniqueIdForFetch);
       //   setRetrievedCertificate(certificate);
-      if (uniqueIdForFetch) setFetchStatus("检索成功！");
-      else setFetchStatus("检索为空！");
+      if (uniqueIdForFetch) setFetchStatus("Retrieved successfully!");
+      else setFetchStatus("Retrieved empty!");
     } catch (error) {
-      setFetchStatus("检索失败，请检查 uniqueId");
+      setFetchStatus("Search failed, please check uniqueId");
     }
   };
 
@@ -118,13 +118,13 @@ export default function page() {
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 text-center mb-8">
-          证书管理系统
+          Certificate Management System
         </h1>
 
         {/* Add Certificate Form */}
         <div className="bg-white shadow rounded-lg p-6 mb-8">
           <h2 className="text-xl font-semibold text-gray-800 mb-6">
-            添加新证书
+            Add New Certificate
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input
@@ -196,18 +196,18 @@ export default function page() {
             onClick={handleUploadCertificate}
             className="mt-6 w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
           >
-            添加证书
+            Add Certificate
           </button>
         </div>
 
         {/* Search Certificate Section */}
         <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-6">查询证书</h2>
+          <h2 className="text-xl font-semibold text-gray-800 mb-6">Search Certificate</h2>
           <div className="flex gap-4">
             <input
               className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2"
               type="text"
-              placeholder="输入 Unique ID 查询"
+              placeholder="Enter Unique ID to search"
               value={uniqueIdForFetch}
               onChange={(e) => setUniqueIdForFetch(e.target.value)}
             />
@@ -215,7 +215,7 @@ export default function page() {
               onClick={() => handleFetchCertificate()}
               className="bg-indigo-600 text-white py-2 px-6 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >
-              查询
+              Search
             </button>
           </div>
           <p className="mt-2 text-sm text-gray-600">{fetchStatus}</p>
@@ -293,14 +293,14 @@ export default function page() {
                             const result = await certificateController.verifyCertificate(
                               retrievedCertificate
                             );
-                            alert(result ? "签名验证成功！" : "签名验证失败！");
+                            alert(result ? "Signature verification successful!" : "Signature verification failed!");
                           } catch (error: unknown) {
-                            alert("验证过程出错：" + (error instanceof Error ? error.message : String(error)));
+                            alert("Verification error: " + (error instanceof Error ? error.message : String(error)));
                           }
                         }}
                         className="ml-4 bg-green-600 text-white py-1 px-3 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
                       >
-                        验证签名
+                        Verify Signature
                       </button>
                     </td>
                   </tr>

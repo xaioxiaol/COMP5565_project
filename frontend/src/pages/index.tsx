@@ -6,83 +6,102 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      {/* 装饰性钻石背景 */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
+        <div className="absolute top-10 left-10 text-6xl text-blue-500">💎</div>
+        <div className="absolute top-1/3 right-20 text-8xl text-purple-500">💎</div>
+        <div className="absolute bottom-20 left-1/4 text-5xl text-pink-500">💎</div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl md:text-6xl">
-            钻石证书认证系统
+          <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl md:text-6xl bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+            Diamond Certificate Certification System
           </h1>
           <p className="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
-            基于区块链的钻石真品证书管理系统，确保每颗钻石的真实性和可追溯性。
+            The blockchain-based diamond authenticity certificate management system ensures the authenticity and traceability of each diamond.
           </p>
         </div>
 
         <div className="mt-16">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2">
             {/* 功能卡片 1 */}
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <div className="text-2xl font-semibold mb-4">证书验证</div>
+            <div className="bg-white rounded-lg shadow-lg p-6 transform transition-all duration-300 hover:scale-105 hover:shadow-xl border border-gray-100">
+              <div className="flex items-center mb-4">
+                <span className="text-4xl mr-3">📜</span>
+                <div className="text-2xl font-semibold">Certificate Verification</div>
+              </div>
               <p className="text-gray-600 mb-4">
-                轻松验证钻石证书的真实性，查看完整的认证历史。
+                Easily verify the authenticity of your diamond certificate and view your complete certification history.
               </p>
               <Link
                 href="/verify"
-                className="inline-block bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                className="inline-flex items-center bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-2 rounded-md hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-md hover:shadow-lg"
               >
-                立即验证
+                Verify now
               </Link>
             </div>
 
             {/* 功能卡片 2 */}
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <div className="text-2xl font-semibold mb-4">证书管理</div>
+            <div className="bg-white rounded-lg shadow-lg p-6 transform transition-all duration-300 hover:scale-105 hover:shadow-xl border border-gray-100">
+              <div className="flex items-center mb-4">
+                <span className="text-4xl mr-3">💎</span>
+                <div className="text-2xl font-semibold">Certificate Management</div>
+              </div>
               <p className="text-gray-600 mb-4">
-                为制造商提供完整的证书管理功能，包括创建、更新和转让。
+                Provides manufacturers with complete certificate management capabilities, including creation, renewal and transfer.
               </p>
               <Link
                 href="/certificate"
-                className={`inline-block px-4 py-2 rounded-md ${
+                className={`inline-flex items-center px-6 py-2 rounded-md transition-all duration-300 shadow-md hover:shadow-lg ${
                   isConnected
-                    ? "bg-blue-500 text-white hover:bg-blue-600"
+                    ? "bg-gradient-to-r from-purple-500 to-purple-600 text-white hover:from-purple-600 hover:to-purple-700"
                     : "bg-gray-300 text-gray-500 cursor-not-allowed"
                 }`}
               >
-                进入管理
+                Enter management
               </Link>
             </div>
 
             {/* 功能卡片 3 */}
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <div className="text-2xl font-semibold mb-4">全程追溯</div>
+            <div className="bg-white rounded-lg shadow-lg p-6 transform transition-all duration-300 hover:scale-105 hover:shadow-xl border border-gray-100">
+              <div className="flex items-center mb-4">
+                <span className="text-4xl mr-3">📋</span>
+                <div className="text-2xl font-semibold">Full traceability</div>
+              </div>
               <p className="text-gray-600 mb-4">
-                从开采到制作，记录钻石的完整生命周期，确保透明度。
+                From mining to production, the entire life cycle of a diamond is recorded to ensure transparency.
               </p>
               <Link
                 href="/auditTrails"
-                className={`inline-block px-4 py-2 rounded-md ${
+                className={`inline-flex items-center px-6 py-2 rounded-md transition-all duration-300 shadow-md hover:shadow-lg ${
                   isConnected
-                    ? "bg-blue-500 text-white hover:bg-blue-600"
+                    ? "bg-gradient-to-r from-pink-500 to-pink-600 text-white hover:from-pink-600 hover:to-pink-700"
                     : "bg-gray-300 text-gray-500 cursor-not-allowed"
                 }`}
               >
-                审计记录
+                Audit records
               </Link>
             </div>
 
             {/* 功能卡片 4 */}
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <div className="text-2xl font-semibold mb-4">所有权转移</div>
+            <div className="bg-white rounded-lg shadow-lg p-6 transform transition-all duration-300 hover:scale-105 hover:shadow-xl border border-gray-100">
+              <div className="flex items-center mb-4">
+                <span className="text-4xl mr-3">🔄</span>
+                <div className="text-2xl font-semibold">Transfer of ownership</div>
+              </div>
               <p className="text-gray-600 mb-4">
-                转移珠宝证书所有权
+                Transferring Jewelry Certificate Ownership
               </p>
               <Link
-                href="/auditTrails"
-                className={`inline-block px-4 py-2 rounded-md ${
+                href="/ownership"
+                className={`inline-flex items-center px-6 py-2 rounded-md transition-all duration-300 shadow-md hover:shadow-lg ${
                   isConnected
-                    ? "bg-blue-500 text-white hover:bg-blue-600"
+                    ? "bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700"
                     : "bg-gray-300 text-gray-500 cursor-not-allowed"
                 }`}
               >
-                转移所有权
+                Transferring Ownership
               </Link>
             </div>
           </div>

@@ -15,7 +15,7 @@ export default function UpdateStatus({ certificateId, currentStatus, onStatusUpd
 
     const handleStatusUpdate = async (newStatus: number) => {
         if (!provider) {
-            toast.error('请先连接钱包');
+            toast.error('Please connect wallet first');
             return;
         }
 
@@ -23,11 +23,11 @@ export default function UpdateStatus({ certificateId, currentStatus, onStatusUpd
         try {
             const tx = await updateStatus(provider, certificateId, newStatus);
             await tx.wait();
-            toast.success('状态更新成功');
+            toast.success('Status updated successfully');
             onStatusUpdate?.();
         } catch (error) {
             console.error(error);
-            toast.error('状态更新失败');
+            toast.error('Status update failed');
         } finally {
             setLoading(false);
         }
@@ -35,23 +35,23 @@ export default function UpdateStatus({ certificateId, currentStatus, onStatusUpd
 
     const nextStatus = currentStatus + 1;
     const statusLabels = [
-        '开采完成',
-        '切割完成',
-        '质量认证完成',
-        '珠宝制作完成',
-        '售出'
+        'Mining Complete',
+        'Cutting Complete',
+        'Quality Certification Complete',
+        'Jewelry Making Complete',
+        'Sold'
     ];
 
     return (
         <div className="space-y-4">
-            <h3 className="text-lg font-medium">更新状态</h3>
+            <h3 className="text-lg font-medium">Update Status</h3>
             {currentStatus < 5 && (
                 <button
                     onClick={() => handleStatusUpdate(nextStatus)}
                     disabled={loading}
                     className="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 disabled:opacity-50"
                 >
-                    {loading ? '更新中...' : `标记为${statusLabels[currentStatus]}`}
+                    {loading ? 'Updating...' : `Mark as ${statusLabels[currentStatus]}`}
                 </button>
             )}
         </div>

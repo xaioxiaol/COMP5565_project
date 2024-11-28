@@ -26,7 +26,7 @@ export default function WalletConnect({ onProviderSet }: WalletConnectProps) {
                         params: [CONFIG.NETWORK],
                     });
                 } catch (addError) {
-                    console.error('添加网络失败:', addError);
+                    console.error('Failed to add network:', addError);
                 }
             }
         }
@@ -35,7 +35,7 @@ export default function WalletConnect({ onProviderSet }: WalletConnectProps) {
     const connectWallet = async () => {
         try {
             if (!provider) {
-                toast.error('请安装MetaMask钱包');
+                toast.error('Please install MetaMask wallet');
                 return;
             }
 
@@ -44,10 +44,10 @@ export default function WalletConnect({ onProviderSet }: WalletConnectProps) {
 
             const accounts = await provider.send('eth_requestAccounts', []);
             setAccount(accounts[0]);
-            toast.success('钱包连接成功');
+            toast.success('Wallet connection successful');
         } catch (error) {
             console.error(error);
-            toast.error('连接钱包失败');
+            toast.error('Failed to connect to wallet');
         }
     };
 
@@ -80,7 +80,7 @@ export default function WalletConnect({ onProviderSet }: WalletConnectProps) {
                     onClick={connectWallet}
                     className="btn-primary"
                 >
-                    连接钱包
+                    Connect your wallet
                 </button>
             ) : (
                 <div className="text-sm text-gray-600">

@@ -16,7 +16,7 @@ export default function AuditTrailsPage() {
 
   const addAuditRecord = async () => {
     try {
-      setStatus("正在添加记录...");
+      setStatus("Adding record...");
       await auditTrailController.addAuditRecord({
         actorId,
         uniqueId,
@@ -24,7 +24,7 @@ export default function AuditTrailsPage() {
         role,
       });
 
-      setStatus("记录添加成功！");
+      setStatus("Record added successfully!");
       // Clear form
       setActorId("");
       setUniqueId("");
@@ -32,19 +32,19 @@ export default function AuditTrailsPage() {
       setRole("");
     } catch (error) {
       console.error(error);
-      setStatus(error instanceof Error ? error.message : "添加记录失败！");
+      setStatus(error instanceof Error ? error.message : "Failed to add record!");
     }
   };
 
   const fetchAuditRecords = async () => {
     try {
-      setStatus("正在查询...");
+      setStatus("Searching...");
       const record = await auditTrailController.getAuditRecord(queryUniqueId);
       setAudit(record);
-      setStatus("查询成功！");
+      setStatus("Search successful!");
     } catch (error) {
       console.error(error);
-      setStatus(error instanceof Error ? error.message : "查询失败！");
+      setStatus(error instanceof Error ? error.message : "Search failed!");
       setAudit(null);
     }
   };
@@ -54,13 +54,13 @@ export default function AuditTrailsPage() {
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Audit Trail 管理系统
+            Audit Trail Management System
           </h1>
-          <p className="text-gray-600">基于区块链的审计追踪平台</p>
+          <p className="text-gray-600">Blockchain-based Audit Tracking Platform</p>
           {status && (
             <div
               className={`mt-4 text-sm ${
-                status.includes("失败") ? "text-red-600" : "text-green-600"
+                status.includes("failed") ? "text-red-600" : "text-green-600"
               }`}
             >
               {status}
@@ -86,13 +86,13 @@ export default function AuditTrailsPage() {
                 />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">添加审计记录</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Add Audit Record</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-1">
               <label className="text-sm font-medium text-gray-700">
-                操作人 ID
+                Actor ID
               </label>
               <input
                 type="text"
@@ -103,7 +103,7 @@ export default function AuditTrailsPage() {
             </div>
             <div className="space-y-1">
               <label className="text-sm font-medium text-gray-700">
-                唯一标识 (Unique ID)
+                Unique ID
               </label>
               <input
                 type="text"
@@ -114,7 +114,7 @@ export default function AuditTrailsPage() {
             </div>
             <div className="space-y-1">
               <label className="text-sm font-medium text-gray-700">
-                批次号
+                Batch Code
               </label>
               <input
                 type="text"
@@ -124,7 +124,7 @@ export default function AuditTrailsPage() {
               />
             </div>
             <div className="space-y-1">
-              <label className="text-sm font-medium text-gray-700">角色</label>
+              <label className="text-sm font-medium text-gray-700">Role</label>
               <input
                 type="text"
                 value={role}
@@ -138,7 +138,7 @@ export default function AuditTrailsPage() {
             onClick={addAuditRecord}
             className="mt-8 w-full bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors duration-200"
           >
-            添加审计记录
+            Add Audit Record
           </button>
         </div>
 
@@ -160,7 +160,7 @@ export default function AuditTrailsPage() {
                 />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">查询审计记录</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Search Audit Record</h2>
           </div>
 
           <div className="flex gap-4">
@@ -168,14 +168,14 @@ export default function AuditTrailsPage() {
               type="text"
               value={queryUniqueId}
               onChange={(e) => setQueryUniqueId(e.target.value)}
-              placeholder="输入唯一标识 (Unique ID)"
+              placeholder="Enter Unique ID to search"
               className="flex-1 rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             />
             <button
               onClick={fetchAuditRecords}
               className="px-8 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors duration-200"
             >
-              查询
+              Search
             </button>
           </div>
 
@@ -189,13 +189,13 @@ export default function AuditTrailsPage() {
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
-                      字段
+                      Field
                     </th>
                     <th
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
-                      内容
+                      Content
                     </th>
                   </tr>
                 </thead>

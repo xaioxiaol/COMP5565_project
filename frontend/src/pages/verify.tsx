@@ -204,7 +204,7 @@ export default function page() {
                     </div>
 
                     {/* 验证签名按钮改用现代风格 */}
-                    <div className="certificate-row flex items-center gap-4">
+                    <div className="flex certificate-row items-center justify-between gap-4">
                       <span className="text-purple-400 font-medium">Signature:</span>
                       <button
                         onClick={async () => {

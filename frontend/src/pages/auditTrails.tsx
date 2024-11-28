@@ -11,7 +11,7 @@ export default function AuditTrailsPage() {
 
   // Query states
   const [queryUniqueId, setQueryUniqueId] = useState("");
-  const [audit, setAudit] = useState<AuditRecord | null>(null);
+  const [audits, setAudits] = useState<AuditRecord[]>([]);
   const [status, setStatus] = useState("");
 
   const addAuditRecord = async () => {
@@ -39,13 +39,13 @@ export default function AuditTrailsPage() {
   const fetchAuditRecords = async () => {
     try {
       setStatus("Searching...");
-      const record = await auditTrailController.getAuditRecord(queryUniqueId);
-      setAudit(record);
+      const records = await auditTrailController.getAllAuditRecords(queryUniqueId);
+      setAudits(records);
       setStatus("Search successful!");
     } catch (error) {
       console.error(error);
       setStatus(error instanceof Error ? error.message : "Search failed!");
-      setAudit(null);
+      setAudits([]);
     }
   };
 
@@ -179,67 +179,49 @@ export default function AuditTrailsPage() {
             </button>
           </div>
 
-          {/* Audit Record Display */}
-          {audit && (
+          {/* Audit Records Display */}
+          {audits && audits.length > 0 && (
             <div className="mt-8 overflow-hidden bg-gray-50 rounded-xl border border-gray-200">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-100">
                   <tr>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Field
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actor ID
                     </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Content
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Unique ID
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Batch Code
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Role
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Timestamp
                     </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  <tr>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      Actor ID
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {audit.actorId}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      Unique ID
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {audit.uniqueId}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      Batch Code
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {audit.batchCode}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      Role
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {audit.role}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      Timestamp
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(audit.timestamp).toLocaleString()}
-                    </td>
-                  </tr>
+                  {audits.map((audit, index) => (
+                    <tr key={index} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {audit.actorId}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {audit.uniqueId}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {audit.batchCode}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {audit.role}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {new Date(audit.timestamp).toLocaleString()}
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>

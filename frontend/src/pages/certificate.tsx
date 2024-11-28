@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import Certificate from "../types/Certificate"; // 引入 Certificate 类
+import Certificate from "../types/certificate"; // Import Certificate type
 import { CONFIG } from "@/config";
 import { ethers } from "ethers";
 import { ipfsService } from "@/utils/ipfs";
@@ -198,9 +198,8 @@ export default function page() {
       const ipfsHash = await ipfsService.uploadJSON(auditData);
 
       await addCertificateInContract(uniqueIdForFetch, ipfsHash);
-
       alert("审计记录已成功添加到 IPFS！");
-      setCertificate(new Certificate("", "", "", "", "", "", Date.now(), "")); // 清空字段
+      setCertificate(new Certificate("", "", "", "", "", "", new Date(), "")); // 清空字段
     } catch (error) {
       console.error(error);
       alert("添加审计记录到 IPFS 失败！");
@@ -216,11 +215,9 @@ export default function page() {
 
     try {
       const records = await getCertificateInContract(uniqueIdForFetch);
-      console.log(records);
       const record = await ipfsService.getJSON(records[0]);
-
-      console.log(record);
-      setCertificate(JSON.parse(record));
+      setRetrievedCertificate(Certificate.fromJSON(JSON.parse(record)));
+      setFetchStatus("检索成功！");
     } catch (error) {
       console.error(error);
       alert("查询审计记录失败！");
@@ -229,7 +226,7 @@ export default function page() {
 
   // Certificate 实例，用于实时存储输入
   const [certificate, setCertificate] = useState<Certificate>(
-    new Certificate("", "", "", "", "", "", Date.now(), "")
+    new Certificate("", "", "", "", "", "", new Date(), "")
   );
 
   // 用户输入的 uniqueId，用于检索
@@ -254,7 +251,7 @@ export default function page() {
       field === "price" ? (value as string) : certificate.price,
       field === "description" ? (value as string) : certificate.description,
       field === "productionDate"
-        ? (value as number)
+        ? (value as unknown as Date)
         : certificate.productionDate,
       field === "signature" ? (value as string) : certificate.signature
     );
@@ -342,11 +339,16 @@ export default function page() {
             />
             <input
               className="input-field"
-              type="number"
+              type="date"
               placeholder="Production Date"
-              value={certificate.productionDate}
+              value={
+                new Date(certificate.productionDate).toISOString().split("T")[0]
+              }
               onChange={(e) =>
-                handleInputChange("productionDate", Number(e.target.value))
+                handleInputChange(
+                  "productionDate",
+                  new Date(e.target.value).getTime()
+                )
               }
             />
             <input
@@ -401,13 +403,45 @@ export default function page() {
           </p>
 
           {retrievedCertificate && (
-            <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-              <h4 className="text-lg font-medium text-gray-800 mb-2">
-                Retrieved Certificate:
-              </h4>
-              <pre className="bg-white p-4 rounded-md overflow-auto">
-                {JSON.stringify(retrievedCertificate.toJSON(), null, 2)}
-              </pre>
+            <div className="mt-6 overflow-x-auto">
+              <table className="min-w-full bg-white border rounded-lg">
+                <tbody>
+                  <tr className="border-b">
+                    <td className="px-6 py-3 bg-gray-50 font-medium">Certificate ID</td>
+                    <td className="px-6 py-3">{retrievedCertificate.certificateId}</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="px-6 py-3 bg-gray-50 font-medium">Unique ID</td>
+                    <td className="px-6 py-3">{retrievedCertificate.uniqueId}</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="px-6 py-3 bg-gray-50 font-medium">Batch Code</td>
+                    <td className="px-6 py-3">{retrievedCertificate.batchCode}</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="px-6 py-3 bg-gray-50 font-medium">State</td>
+                    <td className="px-6 py-3">{retrievedCertificate.state}</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="px-6 py-3 bg-gray-50 font-medium">Price</td>
+                    <td className="px-6 py-3">{retrievedCertificate.price}</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="px-6 py-3 bg-gray-50 font-medium">Description</td>
+                    <td className="px-6 py-3">{retrievedCertificate.description}</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="px-6 py-3 bg-gray-50 font-medium">Production Date</td>
+                    <td className="px-6 py-3">
+                      {retrievedCertificate.productionDate.toLocaleDateString()}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="px-6 py-3 bg-gray-50 font-medium">Signature</td>
+                    <td className="px-6 py-3">{retrievedCertificate.signature}</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           )}
         </div>

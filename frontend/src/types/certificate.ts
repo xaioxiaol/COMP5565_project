@@ -6,7 +6,7 @@ class Certificate {
       public state: string,
       public price: string,
       public description: string,
-      public productionDate: number,
+      public productionDate: Date,
       public signature: string
     ) {}
   
@@ -18,7 +18,7 @@ class Certificate {
         state: this.state,
         price: this.price,
         description: this.description,
-        productionDate: this.productionDate,
+        productionDate: this.productionDate.toISOString(),
         signature: this.signature,
       };
     }
@@ -31,7 +31,7 @@ class Certificate {
         json.state,
         json.price,
         json.description,
-        json.productionDate,
+        new Date(json.productionDate),
         json.signature
       );
     }

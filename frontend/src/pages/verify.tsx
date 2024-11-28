@@ -1,276 +1,188 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Certificate from "../types/Certificate"; // Import Certificate type
 import { CONFIG } from "@/config";
 import { ethers } from "ethers";
 import { ipfsService } from "@/utils/ipfs";
 import { certificateController } from "../controllers/CertificateController";
+import { useWeb3 } from '@/context/Web3Context';
+import { getCertificateDetails } from '@/utils/contracts';
+import { getFromIPFS } from '@/utils/ipfs';
+import toast from 'react-hot-toast';
+import { useRouter } from 'next/router';
 
-export default function page() {
-  //   const [certificateController] = useState();
+export default function VerifyPage() {
+  const { provider, isConnected, connect } = useWeb3();
+  const router = useRouter();
+  const [certificateId, setCertificateId] = useState('');
+  const [certificateData, setCertificateData] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
 
-  const createCertificate = async (certificate: Certificate) => {
-    console.log(certificate);
-    if (
-      !certificate.certificateId ||
-      !certificate.uniqueId ||
-      !certificate.batchCode ||
-      !certificate.state ||
-      !certificate.price ||
-      !certificate.description ||
-      !certificate.productionDate
-    ) {
-      alert("Please fill in all fields!");
+  // 从URL参数获取证书ID并自动查询
+  useEffect(() => {
+    const { id } = router.query;
+    if (id && typeof id === 'string') {
+      setCertificateId(id);
+      handleVerify(id);
+    }
+  }, [router.query]);
+
+  const handleVerify = async (id?: string) => {
+    const uniqueId = id || certificateId;
+    if (!uniqueId) {
+      toast.error('请输入证书ID');
       return;
     }
 
-    try {
-      const certData = certificate.toJSON();
-
-      await certificateController.addCertificate(certData);
-      alert("Certificate added successfully!");
-      setCertificate(new Certificate("", "", "", "", "", "", new Date(), ""));
-    } catch (error) {
-      console.error(error);
-      alert("Failed to add certificate!");
+    if (!isConnected) {
+      try {
+        await connect();
+      } catch (error) {
+        toast.error('请先连接钱包');
+        return;
+      }
     }
-  };
-
-  const fetchCertificate = async (uniqueIdForFetch: string) => {
-    if (!uniqueIdForFetch) {
-      alert("Please enter Unique ID!");
-      return;
-    }
-
+    
+    setLoading(true);
     try {
-      const record = await certificateController.getCertificate(
-        uniqueIdForFetch
-      );
-      //   const record = await ipfsService.getJSON(records[0]);
-      setRetrievedCertificate(Certificate.fromJSON(JSON.stringify(record)));
-      console.log(retrievedCertificate);
-      if (retrievedCertificate?.certificateId)
-        setFetchStatus("Retrieved successfully!");
+      const certificate = await certificateController.getCertificate(uniqueId);
+      setCertificateData(certificate);
+      toast.success('证书验证成功');
     } catch (error) {
-      console.error(error);
-      alert("Failed to query certificate!");
-    }
-  };
-
-  // Certificate 实例，用于实时存储输入
-  const [certificate, setCertificate] = useState<Certificate>(
-    new Certificate("", "", "", "", "", "", new Date(), "")
-  );
-
-  // 用户输入的 uniqueId，用于检索
-  const [uniqueIdForFetch, setUniqueIdForFetch] = useState("");
-  const [retrievedCertificate, setRetrievedCertificate] =
-    useState<Certificate | null>(null);
-
-  // 上传状态
-  const [uploadStatus, setUploadStatus] = useState<string>("");
-  const [fetchStatus, setFetchStatus] = useState<string>("");
-
-  // 表单输入处理：动态更新 Certificate
-  const handleInputChange = (
-    field: keyof Certificate,
-    value: string | number
-  ) => {
-    const updatedCertificate = new Certificate(
-      field === "certificateId" ? (value as string) : certificate.certificateId,
-      field === "uniqueId" ? (value as string) : certificate.uniqueId,
-      field === "batchCode" ? (value as string) : certificate.batchCode,
-      field === "state" ? (value as string) : certificate.state,
-      field === "price" ? (value as string) : certificate.price,
-      field === "description" ? (value as string) : certificate.description,
-      field === "productionDate"
-        ? new Date(value as string)
-        : certificate.productionDate,
-      field === "signature" ? (value as string) : certificate.signature
-    );
-    setCertificate(updatedCertificate);
-  };
-
-  // 提交上传 Certificate
-  const handleUploadCertificate = async () => {
-    try {
-      setUploadStatus("Uploading...");
-      const ipfsHash = await createCertificate(certificate);
-      setUploadStatus(`Upload successful! CID: ${ipfsHash}`);
-    } catch (error) {
-      setUploadStatus("Upload failed, please try again");
-    }
-  };
-
-  // 检索 Certificate
-  const handleFetchCertificate = async () => {
-    try {
-      setFetchStatus("Searching...");
-      await fetchCertificate(uniqueIdForFetch);
-      //   setRetrievedCertificate(certificate);
-      if (uniqueIdForFetch) setFetchStatus("Retrieved successfully!");
-      else setFetchStatus("Retrieved empty!");
-    } catch (error) {
-      setFetchStatus("Search failed, please check uniqueId");
+      console.error('证书验证失败:', error);
+      toast.error('证书验证失败，请确认证书ID是否正确');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 text-center mb-8">
-          Certificate Verification Program
-        </h1>
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-12">
+      {/* 装饰性钻石背景 */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-5">
+        <div className="absolute top-20 left-20 text-7xl transform rotate-12">💎</div>
+        <div className="absolute bottom-20 right-20 text-8xl transform -rotate-12">💎</div>
+      </div>
 
-        {/* Search Certificate Section */}
-        <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-6">
-            Search Certificate
-          </h2>
-          <div className="flex gap-4">
-            <input
-              className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2"
-              type="text"
-              placeholder="Enter Unique ID to search"
-              value={uniqueIdForFetch}
-              onChange={(e) => setUniqueIdForFetch(e.target.value)}
-            />
+      <div className="max-w-4xl mx-auto px-4">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+            证书验证系统
+          </h1>
+          <p className="mt-4 text-gray-600">
+            验证您的珠宝证书真实性
+          </p>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-xl p-8 transform transition-all duration-300 hover:shadow-2xl">
+          <div className="flex items-center space-x-4 mb-8">
+            <div className="relative flex-1">
+              <input
+                type="text"
+                value={certificateId}
+                onChange={(e) => setCertificateId(e.target.value)}
+                placeholder="输入证书编号"
+                className="w-full p-4 pr-12 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300"
+              />
+              <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400">🔍</span>
+            </div>
             <button
-              onClick={() => handleFetchCertificate()}
-              className="bg-indigo-600 text-white py-2 px-6 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              onClick={() => handleVerify()}
+              disabled={loading}
+              className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-4 px-8 rounded-lg transform transition-all duration-300 hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
-              Search
+              {loading ? (
+                <span className="flex items-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  验证中...
+                </span>
+              ) : '验证证书'}
             </button>
           </div>
-          <p className="mt-2 text-sm text-gray-600">{fetchStatus}</p>
 
-          {/* Retrieved Certificate Display */}
-          {retrievedCertificate && (
-            <div className="max-w-3xl mx-auto p-8">
-              <div className="transform transition-all duration-300 hover:scale-[1.02] cursor-pointer">
-                <div className="bg-[#faf6eb] border-8 border-double border-[#234e70] p-8 rounded-lg shadow-2xl relative">
-                  {/* Decorative corners */}
-                  <div className="absolute top-0 left-0 w-16 h-16 border-t-4 border-l-4 border-[#234e70] -translate-x-2 -translate-y-2"></div>
-                  <div className="absolute top-0 right-0 w-16 h-16 border-t-4 border-r-4 border-[#234e70] translate-x-2 -translate-y-2"></div>
-                  <div className="absolute bottom-0 left-0 w-16 h-16 border-b-4 border-l-4 border-[#234e70] -translate-x-2 translate-y-2"></div>
-                  <div className="absolute bottom-0 right-0 w-16 h-16 border-b-4 border-r-4 border-[#234e70] translate-x-2 translate-y-2"></div>
-
-                  <div className="text-center mb-8">
-                    <h1 className="text-3xl font-serif text-[#234e70] mb-2">
-                      E-Certificate of Jewelry
-                    </h1>
-                    <div className="w-32 h-1 bg-[#234e70] mx-auto"></div>
+          {certificateData && (
+            <div className="mt-8 space-y-6 animate-fadeIn">
+              <div className="flex items-center mb-6">
+                <span className="text-3xl mr-3">💎</span>
+                <h3 className="text-2xl font-semibold text-gray-800">证书信息</h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-gray-50 p-4 rounded-lg transform transition-all duration-300 hover:shadow-md">
+                  <div className="flex items-center text-gray-700 mb-2">
+                    <span className="mr-2 text-blue-500">👤</span>
+                    <span className="font-medium">证书ID</span>
                   </div>
-
-                  <div className="space-y-6">
-                    <div className="certificate-row">
-                      <span className="font-serif text-[#234e70] font-semibold">
-                        Certificate ID:
-                      </span>
-                      <span className="text-gray-700">
-                        {retrievedCertificate.certificateId}
-                      </span>
-                    </div>
-
-                    <div className="certificate-row">
-                      <span className="font-serif text-[#234e70] font-semibold">
-                        Unique ID:
-                      </span>
-                      <span className="text-gray-700">
-                        {retrievedCertificate.uniqueId}
-                      </span>
-                    </div>
-
-                    <div className="certificate-row">
-                      <span className="font-serif text-[#234e70] font-semibold">
-                        Batch Code:
-                      </span>
-                      <span className="text-gray-700">
-                        {retrievedCertificate.batchCode}
-                      </span>
-                    </div>
-
-                    <div className="certificate-row">
-                      <span className="font-serif text-[#234e70] font-semibold">
-                        State:
-                      </span>
-                      <span className="text-gray-700">
-                        {retrievedCertificate.state}
-                      </span>
-                    </div>
-
-                    <div className="certificate-row">
-                      <span className="font-serif text-[#234e70] font-semibold">
-                        Price:
-                      </span>
-                      <span className="text-gray-700">
-                        {retrievedCertificate.price}
-                      </span>
-                    </div>
-
-                    <div className="certificate-row">
-                      <span className="font-serif text-[#234e70] font-semibold">
-                        Description:
-                      </span>
-                      <span className="text-gray-700">
-                        {retrievedCertificate.description}
-                      </span>
-                    </div>
-
-                    <div className="certificate-row">
-                      <span className="font-serif text-[#234e70] font-semibold">
-                        Production Date:
-                      </span>
-                      <span className="text-gray-700">
-                        {retrievedCertificate.productionDate.toLocaleString()}
-                      </span>
-                    </div>
-
-                    <div className="certificate-row">
-                      <div className="flex items-center gap-4">
-                        <span className="font-serif text-[#234e70] font-semibold">
-                          Signature:
-                        </span>
-                        {/* <span className="text-gray-700"></span> */}
-                        <button
-                          onClick={async () => {
-                            try {
-                              const result =
-                                await certificateController.verifyCertificate(
-                                  retrievedCertificate
-                                );
-                              alert(
-                                result
-                                  ? "Signature verification successful!"
-                                  : "Signature verification failed!"
-                              );
-                            } catch (error: unknown) {
-                              alert(
-                                "Verification error: " +
-                                  (error instanceof Error
-                                    ? error.message
-                                    : String(error))
-                              );
-                            }
-                          }}
-                          className="flex transform transition-all duration-300 bg-[#234e70] text-white py-2 px-4 rounded-md 
-                            hover:bg-[#1a3a54] hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#234e70] focus:ring-offset-2"
-                        >
-                          Verify Signature:{" "}
-                          {retrievedCertificate.signature.slice(0, 16) + "..."}
-                        </button>
-                      </div>
-                    </div>
+                  <p className="text-gray-600 break-all">{certificateData.certificateId}</p>
+                </div>
+                <div className="bg-gray-50 p-4 rounded-lg transform transition-all duration-300 hover:shadow-md">
+                  <div className="flex items-center text-gray-700 mb-2">
+                    <span className="mr-2 text-blue-500">🔢</span>
+                    <span className="font-medium">唯一ID</span>
                   </div>
-
-                  {/* Optional: Add a watermark or seal */}
-                  <div className="absolute bottom-4 right-4">
-                    <div className="w-24 h-24 border-4 border-[#cc1818] rounded-full flex items-center justify-center rotate-12 opacity-80">
-                      <div className="absolute inset-0 bg-[#ff0000] opacity-10 rounded-full"></div>
-                      <span className="font-serif text-[#cc1818] text-xs font-bold tracking-wider">
-                        VERIFIED
-                      </span>
-                    </div>
+                  <p className="text-gray-600">{certificateData.uniqueId}</p>
+                </div>
+                <div className="bg-gray-50 p-4 rounded-lg transform transition-all duration-300 hover:shadow-md">
+                  <div className="flex items-center text-gray-700 mb-2">
+                    <span className="mr-2 text-blue-500">📦</span>
+                    <span className="font-medium">批次号</span>
+                  </div>
+                  <p className="text-gray-600">{certificateData.batchCode}</p>
+                </div>
+                <div className="bg-gray-50 p-4 rounded-lg transform transition-all duration-300 hover:shadow-md">
+                  <div className="flex items-center text-gray-700 mb-2">
+                    <span className="mr-2 text-blue-500">📊</span>
+                    <span className="font-medium">状态</span>
+                  </div>
+                  <p className="text-gray-600">{certificateData.state}</p>
+                </div>
+                <div className="bg-gray-50 p-4 rounded-lg transform transition-all duration-300 hover:shadow-md">
+                  <div className="flex items-center text-gray-700 mb-2">
+                    <span className="mr-2 text-blue-500">💰</span>
+                    <span className="font-medium">价格</span>
+                  </div>
+                  <p className="text-gray-600">{certificateData.price}</p>
+                </div>
+                <div className="bg-gray-50 p-4 rounded-lg transform transition-all duration-300 hover:shadow-md">
+                  <div className="flex items-center text-gray-700 mb-2">
+                    <span className="mr-2 text-blue-500">📝</span>
+                    <span className="font-medium">描述</span>
+                  </div>
+                  <p className="text-gray-600">{certificateData.description}</p>
+                </div>
+                <div className="bg-gray-50 p-4 rounded-lg transform transition-all duration-300 hover:shadow-md">
+                  <div className="flex items-center text-gray-700 mb-2">
+                    <span className="mr-2 text-blue-500">📅</span>
+                    <span className="font-medium">生产日期</span>
+                  </div>
+                  <p className="text-gray-600">
+                    {new Date(certificateData.productionDate).toLocaleDateString()}
+                  </p>
+                </div>
+                <div className="bg-gray-50 p-4 rounded-lg transform transition-all duration-300 hover:shadow-md">
+                  <div className="flex items-center text-gray-700 mb-2">
+                    <span className="mr-2 text-blue-500">✍️</span>
+                    <span className="font-medium">签名</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <p className="text-gray-600 truncate">
+                      {certificateData.signature.slice(0, 16)}...
+                    </p>
+                    <button
+                      onClick={async () => {
+                        try {
+                          const result = await certificateController.verifyCertificate(certificateData);
+                          toast.success(result ? '签名验证成功！' : '签名验证失败！');
+                        } catch (error) {
+                          toast.error('验证失败: ' + (error instanceof Error ? error.message : String(error)));
+                        }
+                      }}
+                      className="ml-4 bg-gradient-to-r from-green-500 to-green-600 text-white py-2 px-4 rounded-lg transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:from-green-600 hover:to-green-700"
+                    >
+                      验证签名
+                    </button>
                   </div>
                 </div>
               </div>

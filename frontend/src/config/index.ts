@@ -12,7 +12,7 @@ export const CONFIG = {
     },
     
     // 部署后从控制台输出获取
-    CONTRACT_ADDRESS: '0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0'
+    CONTRACT_ADDRESS: '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0'
 };
 
 // Hardhat 测试账号

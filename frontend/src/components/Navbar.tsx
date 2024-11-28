@@ -10,14 +10,29 @@ export default function Navbar() {
         <nav className="sticky top-0 z-50 bg-[#0c0c1d]/80 backdrop-blur-lg border-b border-purple-500/20">
             <div className="max-w-7xl mx-auto px-4">
                 <div className="flex justify-between h-16">
-                    <div className="flex">
-                        <div className="flex-shrink-0 flex items-center">
-                            <Link 
-                                href="/" 
-                                className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r 
-                                from-purple-400 via-pink-500 to-cyan-400 hover:opacity-80 transition-opacity"
+                    <div className="flex items-center space-x-8">
+                        <Link 
+                            href="/" 
+                            className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r 
+                            from-purple-400 via-pink-500 to-cyan-400 hover:opacity-80 transition-opacity"
+                        >
+                            Diamond Tracing System
+                        </Link>
+                        
+                        <div className="hidden md:flex items-center space-x-4">
+                            <Link
+                                href="/shop"
+                                className={`px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-purple-500/10 transition-colors
+                                    ${router.pathname === '/shop' ? 'bg-purple-500/10 text-white' : ''}`}
                             >
-                                Diamond Tracing System
+                                珠宝商城
+                            </Link>
+                            <Link
+                                href="/verify"
+                                className={`px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-purple-500/10 transition-colors
+                                    ${router.pathname === '/verify' ? 'bg-purple-500/10 text-white' : ''}`}
+                            >
+                                证书验证
                             </Link>
                         </div>
                     </div>

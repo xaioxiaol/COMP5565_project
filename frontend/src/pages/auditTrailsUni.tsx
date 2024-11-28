@@ -11,7 +11,7 @@ interface AuditRecord {
 }
 
 export default function Home() {
-  const contractAddress = "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707";
+  const contractAddress = "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0";
   const abi = [
     {
       inputs: [
@@ -38,8 +38,82 @@ export default function Home() {
           name: "uniqueId",
           type: "string",
         },
+        {
+          internalType: "string",
+          name: "ipfsHash",
+          type: "string",
+        },
+      ],
+      name: "addCertificate",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "string",
+          name: "uniqueId",
+          type: "string",
+        },
+        {
+          internalType: "string",
+          name: "ipfsHash",
+          type: "string",
+        },
+      ],
+      name: "addOwnership",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "string",
+          name: "uniqueId",
+          type: "string",
+        },
       ],
       name: "getAuditRecords",
+      outputs: [
+        {
+          internalType: "string[]",
+          name: "",
+          type: "string[]",
+        },
+      ],
+      stateMutability: "view",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "string",
+          name: "uniqueId",
+          type: "string",
+        },
+      ],
+      name: "getCertificates",
+      outputs: [
+        {
+          internalType: "string[]",
+          name: "",
+          type: "string[]",
+        },
+      ],
+      stateMutability: "view",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "string",
+          name: "uniqueId",
+          type: "string",
+        },
+      ],
+      name: "getOwnerships",
       outputs: [
         {
           internalType: "string[]",

@@ -116,20 +116,21 @@ export default function page() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 text-center mb-8">
+        <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 text-center mb-8">
           Certificate Verification Program
         </h1>
 
         {/* Search Certificate Section */}
-        <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-6">
+        <div className="bg-gray-800/50 backdrop-blur-xl border border-purple-500/20 shadow-2xl rounded-lg p-6">
+          <h2 className="text-xl font-semibold text-purple-400 mb-6">
             Search Certificate
           </h2>
           <div className="flex gap-4">
             <input
-              className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2"
+              className="flex-1 rounded-md bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 
+                       shadow-sm focus:border-purple-500 focus:ring-purple-500 px-4 py-2"
               type="text"
               placeholder="Enter Unique ID to search"
               value={uniqueIdForFetch}
@@ -137,139 +138,103 @@ export default function page() {
             />
             <button
               onClick={() => handleFetchCertificate()}
-              className="bg-indigo-600 text-white py-2 px-6 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-2 px-6 rounded-md 
+                       hover:from-purple-700 hover:to-pink-700 transition-all duration-300 
+                       focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 
+                       focus:ring-offset-gray-900"
             >
               Search
             </button>
           </div>
-          <p className="mt-2 text-sm text-gray-600">{fetchStatus}</p>
+          <p className="mt-2 text-sm text-purple-300">{fetchStatus}</p>
 
           {/* Retrieved Certificate Display */}
           {retrievedCertificate && (
             <div className="max-w-3xl mx-auto p-8">
               <div className="transform transition-all duration-300 hover:scale-[1.02] cursor-pointer">
-                <div className="bg-[#faf6eb] border-8 border-double border-[#234e70] p-8 rounded-lg shadow-2xl relative">
-                  {/* Decorative corners */}
-                  <div className="absolute top-0 left-0 w-16 h-16 border-t-4 border-l-4 border-[#234e70] -translate-x-2 -translate-y-2"></div>
-                  <div className="absolute top-0 right-0 w-16 h-16 border-t-4 border-r-4 border-[#234e70] translate-x-2 -translate-y-2"></div>
-                  <div className="absolute bottom-0 left-0 w-16 h-16 border-b-4 border-l-4 border-[#234e70] -translate-x-2 translate-y-2"></div>
-                  <div className="absolute bottom-0 right-0 w-16 h-16 border-b-4 border-r-4 border-[#234e70] translate-x-2 translate-y-2"></div>
+                <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-8 rounded-lg shadow-2xl relative border border-purple-500/20">
+                  {/* 装饰性边角改用霓虹风格 */}
+                  <div className="absolute top-0 left-0 w-16 h-16 border-t-2 border-l-2 border-purple-500/50 -translate-x-2 -translate-y-2"></div>
+                  <div className="absolute top-0 right-0 w-16 h-16 border-t-2 border-r-2 border-purple-500/50 translate-x-2 -translate-y-2"></div>
+                  <div className="absolute bottom-0 left-0 w-16 h-16 border-b-2 border-l-2 border-purple-500/50 -translate-x-2 translate-y-2"></div>
+                  <div className="absolute bottom-0 right-0 w-16 h-16 border-b-2 border-r-2 border-purple-500/50 translate-x-2 translate-y-2"></div>
 
                   <div className="text-center mb-8">
-                    <h1 className="text-3xl font-serif text-[#234e70] mb-2">
-                      E-Certificate of Jewelry
+                    <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                      Digital Certificate
                     </h1>
-                    <div className="w-32 h-1 bg-[#234e70] mx-auto"></div>
+                    <div className="w-32 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 mx-auto mt-2"></div>
                   </div>
 
                   <div className="space-y-6">
-                    <div className="certificate-row">
-                      <span className="font-serif text-[#234e70] font-semibold">
-                        Certificate ID:
-                      </span>
-                      <span className="text-gray-700">
-                        {retrievedCertificate.certificateId}
-                      </span>
+                    {/* 证书内容行样式更新 */}
+                    <div className="certificate-row flex justify-between items-center py-2 border-b border-gray-700">
+                      <span className="text-purple-400 font-medium">Certificate ID:</span>
+                      <span className="text-gray-300">{retrievedCertificate.certificateId}</span>
                     </div>
 
-                    <div className="certificate-row">
-                      <span className="font-serif text-[#234e70] font-semibold">
-                        Unique ID:
-                      </span>
-                      <span className="text-gray-700">
-                        {retrievedCertificate.uniqueId}
-                      </span>
+                    <div className="certificate-row flex justify-between items-center py-2 border-b border-gray-700">
+                      <span className="text-purple-400 font-medium">Unique ID:</span>
+                      <span className="text-gray-300">{retrievedCertificate.uniqueId}</span>
                     </div>
 
-                    <div className="certificate-row">
-                      <span className="font-serif text-[#234e70] font-semibold">
-                        Batch Code:
-                      </span>
-                      <span className="text-gray-700">
-                        {retrievedCertificate.batchCode}
-                      </span>
+                    <div className="certificate-row flex justify-between items-center py-2 border-b border-gray-700">
+                      <span className="text-purple-400 font-medium">Batch Code:</span>
+                      <span className="text-gray-300">{retrievedCertificate.batchCode}</span>
                     </div>
 
-                    <div className="certificate-row">
-                      <span className="font-serif text-[#234e70] font-semibold">
-                        State:
-                      </span>
-                      <span className="text-gray-700">
-                        {retrievedCertificate.state}
-                      </span>
+                    <div className="certificate-row flex justify-between items-center py-2 border-b border-gray-700">
+                      <span className="text-purple-400 font-medium">State:</span>
+                      <span className="text-gray-300">{retrievedCertificate.state}</span>
                     </div>
 
-                    <div className="certificate-row">
-                      <span className="font-serif text-[#234e70] font-semibold">
-                        Price:
-                      </span>
-                      <span className="text-gray-700">
-                        {retrievedCertificate.price}
-                      </span>
+                    <div className="certificate-row flex justify-between items-center py-2 border-b border-gray-700">
+                      <span className="text-purple-400 font-medium">Price:</span>
+                      <span className="text-gray-300">{retrievedCertificate.price}</span>
                     </div>
 
-                    <div className="certificate-row">
-                      <span className="font-serif text-[#234e70] font-semibold">
-                        Description:
-                      </span>
-                      <span className="text-gray-700">
-                        {retrievedCertificate.description}
-                      </span>
+                    <div className="certificate-row flex justify-between items-center py-2 border-b border-gray-700">
+                      <span className="text-purple-400 font-medium">Description:</span>
+                      <span className="text-gray-300">{retrievedCertificate.description}</span>
                     </div>
 
-                    <div className="certificate-row">
-                      <span className="font-serif text-[#234e70] font-semibold">
-                        Production Date:
-                      </span>
-                      <span className="text-gray-700">
-                        {retrievedCertificate.productionDate.toLocaleString()}
-                      </span>
+                    <div className="certificate-row flex justify-between items-center py-2 border-b border-gray-700">
+                      <span className="text-purple-400 font-medium">Production Date:</span>
+                      <span className="text-gray-300">{retrievedCertificate.productionDate.toLocaleString()}</span>
                     </div>
 
-                    <div className="certificate-row">
-                      <div className="flex items-center gap-4">
-                        <span className="font-serif text-[#234e70] font-semibold">
-                          Signature:
-                        </span>
-                        {/* <span className="text-gray-700"></span> */}
-                        <button
-                          onClick={async () => {
-                            try {
-                              const result =
-                                await certificateController.verifyCertificate(
-                                  retrievedCertificate
-                                );
-                              alert(
-                                result
-                                  ? "Signature verification successful!"
-                                  : "Signature verification failed!"
+                    {/* 验证签名按钮改用现代风格 */}
+                    <div className="certificate-row flex items-center gap-4">
+                      <span className="text-purple-400 font-medium">Signature:</span>
+                      <button
+                        onClick={async () => {
+                          try {
+                            const result =
+                              await certificateController.verifyCertificate(
+                                retrievedCertificate
                               );
-                            } catch (error: unknown) {
-                              alert(
-                                "Verification error: " +
-                                  (error instanceof Error
-                                    ? error.message
-                                    : String(error))
-                              );
-                            }
-                          }}
-                          className="flex transform transition-all duration-300 bg-[#234e70] text-white py-2 px-4 rounded-md 
-                            hover:bg-[#1a3a54] hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#234e70] focus:ring-offset-2"
-                        >
-                          Verify Signature:{" "}
+                            alert(
+                              result
+                                ? "Signature verification successful!"
+                                : "Signature verification failed!"
+                            );
+                          } catch (error: unknown) {
+                            alert(
+                              "Verification error: " +
+                                (error instanceof Error
+                                  ? error.message
+                                  : String(error))
+                            );
+                          }
+                        }}
+                        className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white py-2 px-4 rounded-md 
+                          hover:from-purple-700 hover:to-pink-700 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+                      >
+                        Verify Signature
+                        <span className="text-sm opacity-80">
                           {retrievedCertificate.signature.slice(0, 16) + "..."}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Optional: Add a watermark or seal */}
-                  <div className="absolute bottom-4 right-4">
-                    <div className="w-24 h-24 border-4 border-[#cc1818] rounded-full flex items-center justify-center rotate-12 opacity-80">
-                      <div className="absolute inset-0 bg-[#ff0000] opacity-10 rounded-full"></div>
-                      <span className="font-serif text-[#cc1818] text-xs font-bold tracking-wider">
-                        VERIFIED
-                      </span>
+                        </span>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -277,6 +242,13 @@ export default function page() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* 添加装饰性背景元素 */}
+      <div className="fixed top-0 left-0 w-full h-full pointer-events-none -z-10 overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full filter blur-3xl"></div>
+        <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-pink-500/10 rounded-full filter blur-3xl"></div>
+        <div className="absolute bottom-1/4 left-1/3 w-96 h-96 bg-blue-500/10 rounded-full filter blur-3xl"></div>
       </div>
     </div>
   );

@@ -7,7 +7,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-[#0c0c1d] bg-opacity-95 relative overflow-hidden">
       {/* 动态背景效果 */}
-      <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
+      <div className="absolute inset-0 bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
 
       {/* 装饰性光晕效果 */}
       <div className="absolute top-0 -left-4 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob" />

@@ -18,35 +18,35 @@ export default function ShopPage() {
 
             const signer = provider?.getSigner();
             if (!signer) {
-                toast.error('请先连接钱包');
+                toast.error('Please connect your wallet first');
                 return;
             }
 
-            // 将商品价格转换为以太币金额（这里简单示例：1元 = 0.0001 ETH）
+            // Convert the product price to ETH amount (simple example: 1 USD = 0.0001 ETH)
             const priceInEth = (parseFloat(product.price) * 0.0001).toFixed(4);
             
-            // 创建交易
+            // Create a transaction
             const tx = await signer.sendTransaction({
-                to: await signer.getAddress(), // 这里应该替换为商家的钱包地址
+                to: await signer.getAddress(), // This should be replaced with the merchant's wallet address
                 value: ethers.utils.parseEther(priceInEth)
             });
 
-            // 等待交易确认
+            // Wait for the transaction to be confirmed
             await tx.wait();
             
-            toast.success('支付成功！');
+            toast.success('Payment successful!');
             
-            // 跳转到证书查询页面
+            // Redirect to the certificate verification page
             router.push(`/verify?id=${product.uniqueId}`);
         } catch (error) {
-            console.error('支付失败:', error);
-            toast.error('支付失败，请重试');
+            console.error('Payment failed:', error);
+            toast.error('Payment failed, please try again');
         }
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
-            {/* 装饰性钻石背景 */}
+        <div className="min-h-screen bg-gradient-to-b from-[#0c0c1d] to-[#1a1a2f]">
+            {/* Diamond decorative background */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-5">
                 <div className="absolute top-20 left-20 text-7xl transform rotate-12">💎</div>
                 <div className="absolute bottom-20 right-20 text-8xl transform -rotate-12">💎</div>
@@ -54,11 +54,11 @@ export default function ShopPage() {
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative">
                 <div className="text-center mb-12">
-                    <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-                        珠宝精品商城
+                    <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400">
+                        Jewelry Boutique
                     </h1>
-                    <p className="mt-3 text-gray-600">
-                        每件商品都配备区块链证书，确保真实可溯
+                    <p className="mt-3 text-gray-400">
+                        Each piece comes with a blockchain certificate for authenticity and traceability
                     </p>
                 </div>
 
@@ -66,7 +66,7 @@ export default function ShopPage() {
                     {products.map((product) => (
                         <div
                             key={product.id}
-                            className="bg-white rounded-xl shadow-xl p-6 transform transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+                            className="bg-[#1c1c3d] rounded-xl shadow-xl p-6 transform transition-all duration-300 hover:scale-105 hover:shadow-2xl border border-purple-500/20"
                         >
                             <div className="relative h-64 mb-6 rounded-lg overflow-hidden">
                                 <Image
@@ -77,30 +77,34 @@ export default function ShopPage() {
                                     className="transform transition-transform duration-300 hover:scale-110"
                                 />
                             </div>
-                            <h2 className="text-xl font-semibold text-gray-800 mb-2">{product.name}</h2>
-                            <p className="text-gray-600 mb-4 h-20 overflow-hidden">
+                            <h2 className="text-xl font-semibold text-gray-100 mb-2">{product.name}</h2>
+                            <p className="text-gray-400 mb-4 h-20 overflow-hidden">
                                 {product.description}
                             </p>
                             <div className="flex items-center justify-between mb-4">
-                                <span className="text-2xl font-bold text-purple-600">
-                                    ¥{parseInt(product.price).toLocaleString()}
+                                <span className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+                                    ${parseInt(product.price).toLocaleString()}
                                 </span>
-                                <span className="text-sm text-gray-500">
-                                    证书编号: {product.certificateId}
+                                <span className="text-sm text-gray-400">
+                                    Certificate ID: {product.certificateId}
                                 </span>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <button
                                     onClick={() => router.push(`/verify?id=${product.uniqueId}`)}
-                                    className="w-full bg-gray-100 text-gray-800 py-3 px-4 rounded-lg transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
+                                    className="w-full bg-[#2a2a4a] text-gray-200 py-3 px-4 rounded-lg transform transition-all duration-300 
+                                    hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25 hover:bg-[#2a2a5a] 
+                                    focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-[#1c1c3d]"
                                 >
-                                    查看证书
+                                    View Certificate
                                 </button>
                                 <button
                                     onClick={() => handleBuy(product)}
-                                    className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 px-4 rounded-lg transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                    className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 px-4 rounded-lg 
+                                    transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25 
+                                    focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-[#1c1c3d]"
                                 >
-                                    {isConnected ? '购买' : '连接钱包'}
+                                    {isConnected ? 'Buy Now' : 'Connect Wallet'}
                                 </button>
                             </div>
                         </div>

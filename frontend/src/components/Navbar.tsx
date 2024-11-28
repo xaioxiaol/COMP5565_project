@@ -25,14 +25,7 @@ export default function Navbar() {
                                 className={`px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-purple-500/10 transition-colors
                                     ${router.pathname === '/shop' ? 'bg-purple-500/10 text-white' : ''}`}
                             >
-                                珠宝商城
-                            </Link>
-                            <Link
-                                href="/verify"
-                                className={`px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-purple-500/10 transition-colors
-                                    ${router.pathname === '/verify' ? 'bg-purple-500/10 text-white' : ''}`}
-                            >
-                                证书验证
+                                Products
                             </Link>
                         </div>
                     </div>

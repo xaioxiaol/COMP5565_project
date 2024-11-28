@@ -8,7 +8,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-[#0c0c1d] bg-opacity-95 relative overflow-hidden">
       {/* 动态背景效果 */}
       <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
-      
+
       {/* 装饰性光晕效果 */}
       <div className="absolute top-0 -left-4 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob" />
       <div className="absolute top-0 -right-4 w-72 h-72 bg-cyan-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000" />
@@ -20,14 +20,16 @@ export default function HomePage() {
             Diamond Certificate System
           </h1>
           <p className="mt-6 text-lg text-gray-300 sm:text-xl md:text-2xl max-w-3xl mx-auto">
-            Blockchain-powered diamond authenticity verification and traceability system
+            Blockchain-powered diamond authenticity verification and
+            traceability system
           </p>
         </div>
 
         <div className="mt-20">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2">
             {featureCards.map((card, index) => (
-              <div key={index} 
+              <div
+                key={index}
                 className="group relative bg-gray-900/40 backdrop-blur-xl rounded-2xl p-6 
                   border border-gray-700/50 hover:border-purple-500/50
                   transform transition-all duration-500 hover:scale-[1.02]
@@ -42,9 +44,7 @@ export default function HomePage() {
                       {card.title}
                     </div>
                   </div>
-                  <p className="text-gray-400 mb-6">
-                    {card.description}
-                  </p>
+                  <p className="text-gray-400 mb-6">{card.description}</p>
                   <Link
                     href={card.href}
                     className={`inline-flex items-center px-6 py-3 rounded-xl font-medium
@@ -71,34 +71,34 @@ const featureCards = [
   {
     icon: "📜",
     title: "Certificate Verification",
-    description: "Easily verify the authenticity of your diamond certificate and view your complete certification history.",
-    buttonText: "Verify now",
+    description:
+      "Easily verify the authenticity of your diamond certificate and view your complete certification history.",
+    buttonText: "Verify Certificate",
     href: "/verify",
-    requiresConnection: false
+    requiresConnection: false,
   },
   {
     icon: "💎",
     title: "Certificate Management",
     description: "Manage your certificates with ease.",
-    buttonText: "Verify now",
-    href: "/verify",
-    requiresConnection: false
+    buttonText: "Manage Certificates",
+    href: "/certificate",
+    requiresConnection: false,
   },
   {
     icon: "📋",
     title: "Full traceability",
     description: "Full traceability of your diamonds from mine to retail.",
-    buttonText: "Verify now",
-    href: "/verify",
-    requiresConnection: false
+    buttonText: "View Traceability",
+    href: "/auditTrails",
+    requiresConnection: false,
   },
   {
     icon: "🔄",
     title: "Transfer Ownership",
     description: "Transfer ownership of your certificates to another party.",
-    buttonText: "Verify now",
-    href: "/verify",
-    requiresConnection: false
+    buttonText: "Transfer Ownership",
+    href: "/ownership",
+    requiresConnection: false,
   },
-  // ... 其他卡片配置
 ];

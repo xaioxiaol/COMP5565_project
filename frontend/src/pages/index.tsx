@@ -94,8 +94,8 @@ export default function HomePage() {
                 Transferring Jewelry Certificate Ownership
               </p>
               <Link
-                href="/ownership"
-                className={`inline-flex items-center px-6 py-2 rounded-md transition-all duration-300 shadow-md hover:shadow-lg ${
+                href="/auditTrails"
+                className={`inline-block px-4 py-2 rounded-md ${
                   isConnected
                     ? "bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700"
                     : "bg-gray-300 text-gray-500 cursor-not-allowed"

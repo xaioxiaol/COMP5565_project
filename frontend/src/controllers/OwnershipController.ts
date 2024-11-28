@@ -1,9 +1,9 @@
 import { ethers } from "ethers";
 import { CONFIG } from "@/config";
+import Ownership from '@/types/Ownership';
 import { ipfsService } from "@/utils/ipfs";
-import Certificate from "@/types/Certificate";
 
-export class CertificateController {
+export class OwnershipController {
     private contractAddress: string;
     private abi: any[];
 
@@ -11,41 +11,41 @@ export class CertificateController {
         this.contractAddress = CONFIG.CONTRACT_ADDRESS;
         this.abi = [
             {
-                inputs: [
+                "inputs": [
                     {
-                        internalType: "string",
-                        name: "uniqueId",
-                        type: "string",
-                    },
-                    {
-                        internalType: "string",
-                        name: "ipfsHash",
-                        type: "string",
-                    },
+                        "internalType": "string",
+                        "name": "uniqueId",
+                        "type": "string"
+                    }
                 ],
-                name: "addCertificate",
-                outputs: [],
-                stateMutability: "nonpayable",
-                type: "function",
+                "name": "getOwnerships",
+                "outputs": [
+                    {
+                        "internalType": "string[]",
+                        "name": "",
+                        "type": "string[]"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
             },
             {
-                inputs: [
+                "inputs": [
                     {
-                        internalType: "string",
-                        name: "uniqueId",
-                        type: "string",
+                        "internalType": "string",
+                        "name": "uniqueId",
+                        "type": "string"
                     },
-                ],
-                name: "getCertificates",
-                outputs: [
                     {
-                        internalType: "string[]",
-                        name: "",
-                        type: "string[]",
-                    },
+                        "internalType": "string",
+                        "name": "ipfsHash",
+                        "type": "string"
+                    }
                 ],
-                stateMutability: "view",
-                type: "function",
+                "name": "addOwnership",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
             },
         ];
     }
@@ -60,145 +60,79 @@ export class CertificateController {
         return new ethers.Contract(this.contractAddress, this.abi, signer);
     }
 
-    private async generateCertificateId(certificateData: any): Promise<string> {
-        return `CERT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${certificateData.uniqueId}`;
-    }
-
-    private async signCertificate(certificate: any): Promise<string> {
-        if (!window.ethereum) {
-            throw new Error("MetaMask 未安装，请安装后重试！");
-        }
-
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const signer = provider.getSigner();
-        // const message = JSON.stringify(certificate);
-        const message = JSON.stringify({
-            uniqueId: certificate.uniqueId,
-            batchCode: certificate.batchCode,
-            state: certificate.state,
-            price: certificate.price,
-            description: certificate.description,
-            productionDate: typeof certificate.productionDate === 'string'
-                ? certificate.productionDate.split('T')[0]
-                : certificate.productionDate.toISOString().split('T')[0],
-        });
-        console.log("message: " + message);
-        return await signer.signMessage(message);
-    }
-
-    async addCertificate(certificateData: any): Promise<void> {
-        console.log(certificateData);
+    async transferOwnership(uniqueId: string, newOwner: Ownership): Promise<void> {
         try {
-            // Validate input data
-            if (!certificateData.uniqueId || !certificateData.batchCode ||
-                !certificateData.state || !certificateData.price ||
-                !certificateData.description || !certificateData.productionDate) {
+            if (!uniqueId || !newOwner.ownerId) {
                 throw new Error("所有字段都必须填写！");
             }
-
-            // Generate certificate ID and signature
-            const certificateId = await this.generateCertificateId(certificateData);
-            const signature = await this.signCertificate(certificateData);
-
-            // Create new Certificate instance
-            const fullCertificate = new Certificate(
-                certificateId,
-                certificateData.uniqueId,
-                certificateData.batchCode,
-                certificateData.state,
-                certificateData.price,
-                certificateData.description,
-                certificateData.productionDate,
-                signature
-            );
-
-            // Upload to IPFS
-            const ipfsHash = await ipfsService.uploadJSON(fullCertificate.toJSON());
-
-            // Get contract and add certificate
+            const ipfsHash = await ipfsService.uploadJSON(newOwner.toJSON());
             const contract = await this.getContract();
-            const tx = await contract.addCertificate(certificateData.uniqueId, ipfsHash);
+            const tx = await contract.addOwnership(uniqueId, ipfsHash);
 
-            console.log("正在提交交易，请稍后...", tx.hash);
+            console.log("正在转移所有权，请稍后...", tx.hash);
             await tx.wait();
-            console.log("交易完成，已成功添加证书！", tx.hash);
+            console.log("所有权转移成功！", tx.hash);
         } catch (error) {
-            console.error("添加证书失败:", error);
+            console.error("转移所有权失败:", error);
             throw error;
         }
     }
 
-    async getCertificate(uniqueId: string): Promise<Certificate> {
+    async getCurrentOwner(uniqueId: string): Promise<string> {
         try {
             if (!uniqueId) {
                 throw new Error("请输入唯一 ID！");
             }
 
             const contract = await this.getContract();
-            const records = await contract.getCertificates(uniqueId);
-
-            if (!records || records.length === 0) {
-                throw new Error("未找到相关证书");
+            const cids = await contract.getOwnerships(uniqueId);
+            
+            // 如果没有找到任何记录，返回空字符串而不是抛出错误
+            if (!cids || cids.length === 0) {
+                return "";
             }
 
-            const record = await ipfsService.getJSON(records[0]);
-            return Certificate.fromJSON(JSON.parse(record));
+            // 获取最新的所有权记录
+            const latestCid = cids[cids.length - 1];
+            const record = await ipfsService.getJSON(latestCid);
+            console.log("ownership:" + JSON.stringify(record));
+            const ownership = Ownership.fromJSON(JSON.parse(record));
+
+            console.log("ownership:" + JSON.stringify(ownership));
+
+            if (!ownership) {
+                return "";
+            }
+
+            return ownership.ownerId;
         } catch (error) {
-            console.error("获取证书失败:", error);
-            throw error;
+            console.error("获取当前所有者失败:", error);
+            throw new Error("获取所有者信息失败，请稍后重试");
         }
     }
 
-    async getAllCertificates(uniqueId: string): Promise<Certificate[]> {
+    async getOwnershipHistory(uniqueId: string): Promise<Ownership[]> {
         try {
             if (!uniqueId) {
                 throw new Error("请输入唯一 ID！");
             }
 
             const contract = await this.getContract();
-            const records = await contract.getCertificates(uniqueId);
+            const ownerships = await contract.getOwnerships(uniqueId);
+            console.log("history:" + ownerships);
 
-            const certificates = await Promise.all(
-                records.map(async (ipfsHash: string) => {
-                    const record = await ipfsService.getJSON(ipfsHash);
-                    return Certificate.fromJSON(JSON.parse(record));
-                })
-            );
-
-            return certificates;
+            // 转换并排序所有权历史记录
+            return ownerships
+                .map((ownership: { owner: string; timestamp: { toNumber: () => number } }) => ({
+                    owner: ownership.owner,
+                    timestamp: ownership.timestamp.toNumber()
+                }))
+                .sort((a: Ownership, b: Ownership) => b.transactionDate - a.transactionDate);
         } catch (error) {
-            console.error("获取证书失败:", error);
-            throw error;
-        }
-    }
-
-    async verifyCertificate(certificate: Certificate): Promise<boolean> {
-        console.log(certificate);
-        try {
-            const provider = new ethers.providers.Web3Provider(window.ethereum as ethers.providers.ExternalProvider);
-            const message = JSON.stringify({
-                uniqueId: certificate.uniqueId,
-                batchCode: certificate.batchCode,
-                state: certificate.state,
-                price: certificate.price,
-                description: certificate.description,
-                productionDate: typeof certificate.productionDate === 'string'
-                    ? certificate.productionDate.split('T')[0]
-                    : certificate.productionDate.toISOString().split('T')[0],
-            });
-
-            console.log("message: " + message);
-
-            const recoveredAddress = ethers.utils.verifyMessage(message, certificate.signature);
-            const signer = await provider.getSigner();
-            const signerAddress = await signer.getAddress();
-
-            return recoveredAddress.toLowerCase() === signerAddress.toLowerCase();
-        } catch (error) {
-            console.error("验证证书失败:", error);
+            console.error("获取所有权历史失败:", error);
             throw error;
         }
     }
 }
 
-export const certificateController = new CertificateController();
+export const ownershipController = new OwnershipController();

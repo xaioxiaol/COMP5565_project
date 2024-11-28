@@ -166,7 +166,7 @@ export default function page() {
     }
   }
 
-  const addCertificate = async (certificate: Certificate) => {
+  const createCertificate = async (certificate: Certificate) => {
     if (
       !certificate.certificateId ||
       !certificate.uniqueId ||
@@ -182,7 +182,7 @@ export default function page() {
     }
 
     try {
-      const auditData = {
+      const certData = {
         certificateId: certificate.certificateId,
         uniqueId: certificate.uniqueId,
         batchCode: certificate.batchCode,
@@ -195,9 +195,8 @@ export default function page() {
       };
 
       // 上传数据到 IPFS
-      const ipfsHash = await ipfsService.uploadJSON(auditData);
-
-      await addCertificateInContract(uniqueIdForFetch, ipfsHash);
+      const ipfsHash = await ipfsService.uploadJSON(certData);
+      await addCertificateInContract(certData.uniqueId, ipfsHash);
       alert("审计记录已成功添加到 IPFS！");
       setCertificate(new Certificate("", "", "", "", "", "", new Date(), "")); // 清空字段
     } catch (error) {
@@ -216,6 +215,7 @@ export default function page() {
     try {
       const records = await getCertificateInContract(uniqueIdForFetch);
       const record = await ipfsService.getJSON(records[0]);
+      console.log(record);
       setRetrievedCertificate(Certificate.fromJSON(JSON.parse(record)));
       setFetchStatus("检索成功！");
     } catch (error) {
@@ -262,8 +262,8 @@ export default function page() {
   const handleUploadCertificate = async () => {
     try {
       setUploadStatus("上传中...");
-      const cid = await addCertificate(certificate);
-      setUploadStatus(`上传成功！CID: ${cid}`);
+      const ipfsHash = await createCertificate(certificate);
+      setUploadStatus(`上传成功！CID: ${ipfsHash}`);
     } catch (error) {
       setUploadStatus("上传失败，请重试");
     }
@@ -274,6 +274,7 @@ export default function page() {
     try {
       setFetchStatus("正在检索...");
       await fetchCertificate(uniqueIdForFetch);
+    //   setRetrievedCertificate(certificate);
       setFetchStatus("检索成功！");
     } catch (error) {
       setFetchStatus("检索失败，请检查 uniqueId");
@@ -282,19 +283,19 @@ export default function page() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-lg p-8">
-        <h1 className="text-3xl font-bold text-center text-gray-900 mb-8">
-          Certificate Management System
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-3xl font-bold text-gray-900 text-center mb-8">
+          证书管理系统
         </h1>
 
-        {/* Create Certificate Form */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-6">
-            Create Certificate
+        {/* Add Certificate Form */}
+        <div className="bg-white shadow rounded-lg p-6 mb-8">
+          <h2 className="text-xl font-semibold text-gray-800 mb-6">
+            添加新证书
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input
-              className="input-field"
+              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2"
               type="text"
               placeholder="Certificate ID"
               value={certificate.certificateId}
@@ -303,56 +304,54 @@ export default function page() {
               }
             />
             <input
-              className="input-field"
+              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2"
               type="text"
               placeholder="Unique ID"
               value={certificate.uniqueId}
               onChange={(e) => handleInputChange("uniqueId", e.target.value)}
             />
             <input
-              className="input-field"
+              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2"
               type="text"
               placeholder="Batch Code"
               value={certificate.batchCode}
               onChange={(e) => handleInputChange("batchCode", e.target.value)}
             />
             <input
-              className="input-field"
+              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2"
               type="text"
               placeholder="State"
               value={certificate.state}
               onChange={(e) => handleInputChange("state", e.target.value)}
             />
             <input
-              className="input-field"
+              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2"
               type="text"
               placeholder="Price"
               value={certificate.price}
               onChange={(e) => handleInputChange("price", e.target.value)}
             />
             <input
-              className="input-field"
-              type="text"
+              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2"
+              type="date"
+              placeholder="Production Date"
+              value={
+                certificate.productionDate
+                  ? certificate.productionDate.toISOString().split("T")[0]
+                  : ""
+              }
+              onChange={(e) =>
+                handleInputChange("productionDate", e.target.value)
+              }
+            />
+            <textarea
+              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2 md:col-span-2"
               placeholder="Description"
               value={certificate.description}
               onChange={(e) => handleInputChange("description", e.target.value)}
             />
             <input
-              className="input-field"
-              type="date"
-              placeholder="Production Date"
-              value={
-                new Date(certificate.productionDate).toISOString().split("T")[0]
-              }
-              onChange={(e) =>
-                handleInputChange(
-                  "productionDate",
-                  new Date(e.target.value).getTime()
-                )
-              }
-            />
-            <input
-              className="input-field"
+              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2 md:col-span-2"
               type="text"
               placeholder="Signature"
               value={certificate.signature}
@@ -361,84 +360,100 @@ export default function page() {
           </div>
           <button
             onClick={handleUploadCertificate}
-            className="mt-6 w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200"
+            className="mt-6 w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
           >
-            Upload Certificate
+            添加证书
           </button>
-          <p
-            className={`mt-2 text-center ${
-              uploadStatus.includes("成功") ? "text-green-600" : "text-red-600"
-            }`}
-          >
-            {uploadStatus}
-          </p>
         </div>
 
-        {/* Retrieve Certificate Section */}
-        <div className="border-t pt-8">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-6">
-            Retrieve Certificate
-          </h2>
+        {/* Search Certificate Section */}
+        <div className="bg-white shadow rounded-lg p-6">
+          <h2 className="text-xl font-semibold text-gray-800 mb-6">查询证书</h2>
           <div className="flex gap-4">
             <input
-              className="input-field flex-1"
+              className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2"
               type="text"
-              placeholder="Enter Unique ID"
+              placeholder="输入 Unique ID 查询"
               value={uniqueIdForFetch}
               onChange={(e) => setUniqueIdForFetch(e.target.value)}
             />
             <button
-              onClick={handleFetchCertificate}
-              className="bg-green-600 text-white py-2 px-6 rounded-md hover:bg-green-700 transition duration-200"
+              onClick={() => handleFetchCertificate()}
+              className="bg-indigo-600 text-white py-2 px-6 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >
-              Retrieve
+              查询
             </button>
           </div>
-          <p
-            className={`mt-2 text-center ${
-              fetchStatus.includes("成功") ? "text-green-600" : "text-red-600"
-            }`}
-          >
-            {fetchStatus}
-          </p>
+          <p className="mt-2 text-sm text-gray-600">{fetchStatus}</p>
 
+          {/* Retrieved Certificate Display */}
           {retrievedCertificate && (
             <div className="mt-6 overflow-x-auto">
-              <table className="min-w-full bg-white border rounded-lg">
-                <tbody>
-                  <tr className="border-b">
-                    <td className="px-6 py-3 bg-gray-50 font-medium">Certificate ID</td>
-                    <td className="px-6 py-3">{retrievedCertificate.certificateId}</td>
+              <table className="min-w-full divide-y divide-gray-200">
+                <tbody className="divide-y divide-gray-200">
+                  <tr>
+                    <td className="px-6 py-4 whitespace-nowrap bg-gray-50 text-sm font-medium text-gray-900">
+                      Certificate ID
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {retrievedCertificate.certificateId}
+                    </td>
                   </tr>
-                  <tr className="border-b">
-                    <td className="px-6 py-3 bg-gray-50 font-medium">Unique ID</td>
-                    <td className="px-6 py-3">{retrievedCertificate.uniqueId}</td>
+                  <tr>
+                    <td className="px-6 py-4 whitespace-nowrap bg-gray-50 text-sm font-medium text-gray-900">
+                      Unique ID
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {retrievedCertificate.uniqueId}
+                    </td>
                   </tr>
-                  <tr className="border-b">
-                    <td className="px-6 py-3 bg-gray-50 font-medium">Batch Code</td>
-                    <td className="px-6 py-3">{retrievedCertificate.batchCode}</td>
+                  <tr>
+                    <td className="px-6 py-4 whitespace-nowrap bg-gray-50 text-sm font-medium text-gray-900">
+                      Batch Code
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {retrievedCertificate.batchCode}
+                    </td>
                   </tr>
-                  <tr className="border-b">
-                    <td className="px-6 py-3 bg-gray-50 font-medium">State</td>
-                    <td className="px-6 py-3">{retrievedCertificate.state}</td>
+                  <tr>
+                    <td className="px-6 py-4 whitespace-nowrap bg-gray-50 text-sm font-medium text-gray-900">
+                      State
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {retrievedCertificate.state}
+                    </td>
                   </tr>
-                  <tr className="border-b">
-                    <td className="px-6 py-3 bg-gray-50 font-medium">Price</td>
-                    <td className="px-6 py-3">{retrievedCertificate.price}</td>
+                  <tr>
+                    <td className="px-6 py-4 whitespace-nowrap bg-gray-50 text-sm font-medium text-gray-900">
+                      Price
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {retrievedCertificate.price}
+                    </td>
                   </tr>
-                  <tr className="border-b">
-                    <td className="px-6 py-3 bg-gray-50 font-medium">Description</td>
-                    <td className="px-6 py-3">{retrievedCertificate.description}</td>
+                  <tr>
+                    <td className="px-6 py-4 whitespace-nowrap bg-gray-50 text-sm font-medium text-gray-900">
+                      Description
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {retrievedCertificate.description}
+                    </td>
                   </tr>
-                  <tr className="border-b">
-                    <td className="px-6 py-3 bg-gray-50 font-medium">Production Date</td>
-                    <td className="px-6 py-3">
+                  <tr>
+                    <td className="px-6 py-4 whitespace-nowrap bg-gray-50 text-sm font-medium text-gray-900">
+                      Production Date
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {retrievedCertificate.productionDate.toLocaleDateString()}
                     </td>
                   </tr>
                   <tr>
-                    <td className="px-6 py-3 bg-gray-50 font-medium">Signature</td>
-                    <td className="px-6 py-3">{retrievedCertificate.signature}</td>
+                    <td className="px-6 py-4 whitespace-nowrap bg-gray-50 text-sm font-medium text-gray-900">
+                      Signature
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {retrievedCertificate.signature}
+                    </td>
                   </tr>
                 </tbody>
               </table>

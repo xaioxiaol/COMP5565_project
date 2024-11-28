@@ -1,6 +1,5 @@
 import { useWeb3 } from "@/context/Web3Context";
 import Link from "next/link";
-import Image from "next/image";
 
 export default function HomePage() {
   const { isConnected } = useWeb3();
@@ -40,7 +39,7 @@ export default function HomePage() {
                 为制造商提供完整的证书管理功能，包括创建、更新和转让。
               </p>
               <Link
-                href="/manage"
+                href="/certificate"
                 className={`inline-block px-4 py-2 rounded-md ${
                   isConnected
                     ? "bg-blue-500 text-white hover:bg-blue-600"
@@ -58,7 +57,7 @@ export default function HomePage() {
                 从开采到制作，记录钻石的完整生命周期，确保透明度。
               </p>
               <Link
-                href="/auditTrailsUni"
+                href="/auditTrails"
                 className={`inline-block px-4 py-2 rounded-md ${
                   isConnected
                     ? "bg-blue-500 text-white hover:bg-blue-600"
@@ -76,7 +75,7 @@ export default function HomePage() {
                 转移珠宝证书所有权
               </p>
               <Link
-                href="/auditTrailsUni"
+                href="/auditTrails"
                 className={`inline-block px-4 py-2 rounded-md ${
                   isConnected
                     ? "bg-blue-500 text-white hover:bg-blue-600"

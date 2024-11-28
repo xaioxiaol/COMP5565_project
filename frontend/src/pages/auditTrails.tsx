@@ -1,3 +1,4 @@
+import { CONFIG } from "@/config";
 import { ipfsService } from "@/utils/ipfs";
 import { ethers } from "ethers";
 import { useState } from "react";
@@ -10,8 +11,8 @@ interface AuditRecord {
   timestamp: string;
 }
 
-export default function Home() {
-  const contractAddress = "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0";
+export default function page() {
+  const contractAddress = CONFIG.CONTRACT_ADDRESS;
   const abi = [
     {
       inputs: [

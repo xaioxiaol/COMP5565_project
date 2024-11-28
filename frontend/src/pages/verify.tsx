@@ -57,6 +57,7 @@ export default function VerifyPage() {
   };
 
   return (
+<<<<<<< HEAD
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-12">
       {/* 装饰性钻石背景 */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-5">
@@ -90,6 +91,34 @@ export default function VerifyPage() {
               onClick={() => handleVerify()}
               disabled={loading}
               className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-4 px-8 rounded-lg transform transition-all duration-300 hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+=======
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 text-center mb-8">
+          Certificate Verification Program
+        </h1>
+
+        {/* Search Certificate Section */}
+        <div className="bg-gray-800/50 backdrop-blur-xl border border-purple-500/20 shadow-2xl rounded-lg p-6">
+          <h2 className="text-xl font-semibold text-purple-400 mb-6">
+            Search Certificate
+          </h2>
+          <div className="flex gap-4">
+            <input
+              className="flex-1 rounded-md bg-gray-700/50 border-gray-600 text-white placeholder-gray-400 
+                       shadow-sm focus:border-purple-500 focus:ring-purple-500 px-4 py-2"
+              type="text"
+              placeholder="Enter Unique ID to search"
+              value={uniqueIdForFetch}
+              onChange={(e) => setUniqueIdForFetch(e.target.value)}
+            />
+            <button
+              onClick={() => handleFetchCertificate()}
+              className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-2 px-6 rounded-md 
+                       hover:from-purple-700 hover:to-pink-700 transition-all duration-300 
+                       focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 
+                       focus:ring-offset-gray-900"
+>>>>>>> 7f3fe072ec9b13b339b0f2cadc8d19b7340cf1f2
             >
               {loading ? (
                 <span className="flex items-center">
@@ -102,6 +131,7 @@ export default function VerifyPage() {
               ) : '验证证书'}
             </button>
           </div>
+<<<<<<< HEAD
 
           {certificateData && (
             <div className="mt-8 space-y-6 animate-fadeIn">
@@ -183,12 +213,111 @@ export default function VerifyPage() {
                     >
                       验证签名
                     </button>
+=======
+          <p className="mt-2 text-sm text-purple-300">{fetchStatus}</p>
+
+          {/* Retrieved Certificate Display */}
+          {retrievedCertificate && (
+            <div className="max-w-3xl mx-auto p-8">
+              <div className="transform transition-all duration-300 hover:scale-[1.02] cursor-pointer">
+                <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-8 rounded-lg shadow-2xl relative border border-purple-500/20">
+                  {/* 装饰性边角改用霓虹风格 */}
+                  <div className="absolute top-0 left-0 w-16 h-16 border-t-2 border-l-2 border-purple-500/50 -translate-x-2 -translate-y-2"></div>
+                  <div className="absolute top-0 right-0 w-16 h-16 border-t-2 border-r-2 border-purple-500/50 translate-x-2 -translate-y-2"></div>
+                  <div className="absolute bottom-0 left-0 w-16 h-16 border-b-2 border-l-2 border-purple-500/50 -translate-x-2 translate-y-2"></div>
+                  <div className="absolute bottom-0 right-0 w-16 h-16 border-b-2 border-r-2 border-purple-500/50 translate-x-2 translate-y-2"></div>
+
+                  <div className="text-center mb-8">
+                    <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                      Digital Certificate
+                    </h1>
+                    <div className="w-32 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 mx-auto mt-2"></div>
+                  </div>
+
+                  <div className="space-y-6">
+                    {/* 证书内容行样式更新 */}
+                    <div className="certificate-row flex justify-between items-center py-2 border-b border-gray-700">
+                      <span className="text-purple-400 font-medium">Certificate ID:</span>
+                      <span className="text-gray-300">{retrievedCertificate.certificateId}</span>
+                    </div>
+
+                    <div className="certificate-row flex justify-between items-center py-2 border-b border-gray-700">
+                      <span className="text-purple-400 font-medium">Unique ID:</span>
+                      <span className="text-gray-300">{retrievedCertificate.uniqueId}</span>
+                    </div>
+
+                    <div className="certificate-row flex justify-between items-center py-2 border-b border-gray-700">
+                      <span className="text-purple-400 font-medium">Batch Code:</span>
+                      <span className="text-gray-300">{retrievedCertificate.batchCode}</span>
+                    </div>
+
+                    <div className="certificate-row flex justify-between items-center py-2 border-b border-gray-700">
+                      <span className="text-purple-400 font-medium">State:</span>
+                      <span className="text-gray-300">{retrievedCertificate.state}</span>
+                    </div>
+
+                    <div className="certificate-row flex justify-between items-center py-2 border-b border-gray-700">
+                      <span className="text-purple-400 font-medium">Price:</span>
+                      <span className="text-gray-300">{retrievedCertificate.price}</span>
+                    </div>
+
+                    <div className="certificate-row flex justify-between items-center py-2 border-b border-gray-700">
+                      <span className="text-purple-400 font-medium">Description:</span>
+                      <span className="text-gray-300">{retrievedCertificate.description}</span>
+                    </div>
+
+                    <div className="certificate-row flex justify-between items-center py-2 border-b border-gray-700">
+                      <span className="text-purple-400 font-medium">Production Date:</span>
+                      <span className="text-gray-300">{retrievedCertificate.productionDate.toLocaleString()}</span>
+                    </div>
+
+                    {/* 验证签名按钮改用现代风格 */}
+                    <div className="certificate-row flex items-center gap-4">
+                      <span className="text-purple-400 font-medium">Signature:</span>
+                      <button
+                        onClick={async () => {
+                          try {
+                            const result =
+                              await certificateController.verifyCertificate(
+                                retrievedCertificate
+                              );
+                            alert(
+                              result
+                                ? "Signature verification successful!"
+                                : "Signature verification failed!"
+                            );
+                          } catch (error: unknown) {
+                            alert(
+                              "Verification error: " +
+                                (error instanceof Error
+                                  ? error.message
+                                  : String(error))
+                            );
+                          }
+                        }}
+                        className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white py-2 px-4 rounded-md 
+                          hover:from-purple-700 hover:to-pink-700 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+                      >
+                        Verify Signature
+                        <span className="text-sm opacity-80">
+                          {retrievedCertificate.signature.slice(0, 16) + "..."}
+                        </span>
+                      </button>
+                    </div>
+>>>>>>> 7f3fe072ec9b13b339b0f2cadc8d19b7340cf1f2
                   </div>
                 </div>
               </div>
             </div>
           )}
         </div>
+      </div>
+
+      {/* 添加装饰性背景元素 */}
+      <div className="fixed top-0 left-0 w-full h-full pointer-events-none -z-10 overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full filter blur-3xl"></div>
+        <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-pink-500/10 rounded-full filter blur-3xl"></div>
+        <div className="absolute bottom-1/4 left-1/3 w-96 h-96 bg-blue-500/10 rounded-full filter blur-3xl"></div>
       </div>
     </div>
   );

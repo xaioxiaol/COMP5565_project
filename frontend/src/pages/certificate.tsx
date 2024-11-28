@@ -107,213 +107,197 @@ export default function page() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
-      {/* 装饰性钻石背景 */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-5">
-        <div className="absolute top-20 left-20 text-7xl transform rotate-12">💎</div>
-        <div className="absolute bottom-20 right-20 text-8xl transform -rotate-12">💎</div>
-      </div>
+    <div className="min-h-screen bg-[#0c0c1d] bg-opacity-95 relative overflow-hidden">
+      {/* 动态背景网格 */}
+      <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
+      
+      {/* 动态光晕效果 */}
+      <div className="absolute top-0 -left-4 w-96 h-96 bg-purple-500/30 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse-slow" />
+      <div className="absolute top-0 -right-4 w-96 h-96 bg-cyan-500/30 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse-slow delay-75" />
+      <div className="absolute -bottom-8 left-20 w-96 h-96 bg-pink-500/30 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse-slow delay-150" />
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-            Certificate Management System
-          </h1>
-          <p className="mt-3 text-gray-600">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative">
+        {/* 标题部分 */}
+        <div className="text-center mb-12 relative">
+          <div className="inline-block">
+            <h1 className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 animate-gradient-x mb-4">
+              Certificate Management System
+            </h1>
+            <div className="h-1 w-full bg-gradient-to-r from-transparent via-purple-500 to-transparent animate-pulse-slow" />
+          </div>
+          <p className="mt-4 text-gray-300 text-lg">
             Create and manage your diamond certificates with blockchain security
           </p>
         </div>
 
-        {/* Add Certificate Form */}
-        <div className="bg-white rounded-xl shadow-xl p-8 mb-8 transform transition-all duration-300 hover:shadow-2xl">
-          <div className="flex items-center mb-6">
-            <span className="text-3xl mr-3">📜</span>
-            <h2 className="text-2xl font-semibold text-gray-800">Add New Certificate</h2>
+        {/* 添加证书表单 */}
+        <div className="bg-gray-900/40 backdrop-blur-xl rounded-2xl p-8 mb-8 
+          border border-gray-700/50 hover:border-purple-500/50
+          transform transition-all duration-500 hover:scale-[1.01]
+          relative overflow-hidden group">
+          <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/5 to-transparent" />
+          
+          <div className="relative">
+            <div className="flex items-center mb-8">
+              <div className="p-3 bg-purple-500/10 rounded-xl mr-4">
+                <span className="text-2xl">📜</span>
+              </div>
+              <h2 className="text-2xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
+                Add New Certificate
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[
+                { field: "certificateId", label: "Certificate ID", type: "text" },
+                { field: "uniqueId", label: "Unique ID", type: "text" },
+                { field: "batchCode", label: "Batch Code", type: "text" },
+                { field: "state", label: "State", type: "text" },
+                { field: "price", label: "Price", type: "text" },
+                { field: "productionDate", label: "Production Date", type: "date" }
+              ].map(({ field, label, type }) => (
+                <div key={field} className="space-y-2">
+                  <label className="text-sm font-medium text-gray-300">{label}</label>
+                  <input
+                    type={type}
+                    value={type === "date" && certificate[field as keyof Certificate] instanceof Date 
+                      ? (certificate[field as keyof Certificate] as Date).toISOString().split("T")[0] 
+                      : String(certificate[field as keyof Certificate])}
+                    onChange={(e) => handleInputChange(field as keyof Certificate, e.target.value)}
+                    className="w-full rounded-xl bg-gray-800/50 border border-gray-700/50 
+                      text-gray-300 placeholder-gray-500 
+                      focus:border-purple-500 focus:ring-purple-500/20 
+                      transition-all duration-300 px-4 py-3
+                      hover:border-purple-500/50"
+                    placeholder={label}
+                  />
+                </div>
+              ))}
+
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-sm font-medium text-gray-300">Description</label>
+                <textarea
+                  value={certificate.description}
+                  onChange={(e) => handleInputChange("description", e.target.value)}
+                  className="w-full rounded-xl bg-gray-800/50 border border-gray-700/50 
+                    text-gray-300 placeholder-gray-500 
+                    focus:border-purple-500 focus:ring-purple-500/20 
+                    transition-all duration-300 px-4 py-3
+                    hover:border-purple-500/50"
+                  placeholder="Description"
+                  rows={4}
+                />
+              </div>
+            </div>
+
+            <button
+              onClick={handleUploadCertificate}
+              className="mt-8 w-full bg-gradient-to-r from-purple-500 to-pink-500 
+                text-white font-medium rounded-xl py-3 px-4
+                transform transition-all duration-300 
+                hover:scale-[1.02] hover:shadow-lg hover:shadow-purple-500/25
+                active:scale-[0.98]
+                relative overflow-hidden group">
+              <span className="relative z-10">Add Certificate</span>
+              <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full 
+                transition-transform duration-300 bg-gradient-to-r from-transparent 
+                via-white/10 to-transparent" />
+            </button>
+
+            {uploadStatus && (
+              <div className={`mt-4 text-sm ${uploadStatus.includes("failed") ? "text-red-400" : "text-green-400"}`}>
+                {uploadStatus}
+              </div>
+            )}
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <input
-              className="block w-full rounded-lg border-2 border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 px-4 py-3"
-              type="text"
-              placeholder="Certificate ID"
-              value={certificate.certificateId}
-              onChange={(e) => handleInputChange("certificateId", e.target.value)}
-            />
-            <input
-              className="block w-full rounded-lg border-2 border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 px-4 py-3"
-              type="text"
-              placeholder="Unique ID"
-              value={certificate.uniqueId}
-              onChange={(e) => handleInputChange("uniqueId", e.target.value)}
-            />
-            <input
-              className="block w-full rounded-lg border-2 border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 px-4 py-3"
-              type="text"
-              placeholder="Batch Code"
-              value={certificate.batchCode}
-              onChange={(e) => handleInputChange("batchCode", e.target.value)}
-            />
-            <input
-              className="block w-full rounded-lg border-2 border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 px-4 py-3"
-              type="text"
-              placeholder="State"
-              value={certificate.state}
-              onChange={(e) => handleInputChange("state", e.target.value)}
-            />
-            <input
-              className="block w-full rounded-lg border-2 border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 px-4 py-3"
-              type="text"
-              placeholder="Price"
-              value={certificate.price}
-              onChange={(e) => handleInputChange("price", e.target.value)}
-            />
-            <input
-              className="block w-full rounded-lg border-2 border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 px-4 py-3"
-              type="date"
-              placeholder="Production Date"
-              value={certificate.productionDate instanceof Date ? certificate.productionDate.toISOString().split("T")[0] : ""}
-              onChange={(e) => handleInputChange("productionDate", e.target.value)}
-            />
-            <textarea
-              className="block w-full rounded-lg border-2 border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 px-4 py-3 md:col-span-2"
-              placeholder="Description"
-              value={certificate.description}
-              onChange={(e) => handleInputChange("description", e.target.value)}
-            />
-            <input
-              className="block w-full rounded-lg border-2 border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 px-4 py-3 md:col-span-2"
-              type="text"
-              placeholder="Signature"
-              value={certificate.signature}
-              onChange={(e) => handleInputChange("signature", e.target.value)}
-            />
-          </div>
-          <button
-            onClick={handleUploadCertificate}
-            className="mt-6 w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 px-4 rounded-lg transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          >
-            Add Certificate
-          </button>
-          {uploadStatus && (
-            <p className={`mt-2 text-sm ${uploadStatus.includes("failed") ? "text-red-600" : "text-green-600"}`}>
-              {uploadStatus}
-            </p>
-          )}
         </div>
 
-        {/* Search Certificate Section */}
-        <div className="bg-white rounded-xl shadow-xl p-8 transform transition-all duration-300 hover:shadow-2xl">
-          <div className="flex items-center mb-6">
-            <span className="text-3xl mr-3">🔍</span>
-            <h2 className="text-2xl font-semibold text-gray-800">Search Certificate</h2>
+        {/* 搜索证书部分 */}
+        <div className="bg-gray-900/40 backdrop-blur-xl rounded-2xl p-8
+          border border-gray-700/50 hover:border-purple-500/50
+          transform transition-all duration-500 hover:scale-[1.01]">
+          <div className="flex items-center mb-8">
+            <div className="p-3 bg-purple-500/10 rounded-xl mr-4">
+              <span className="text-2xl">🔍</span>
+            </div>
+            <h2 className="text-2xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
+              Search Certificate
+            </h2>
           </div>
+
           <div className="flex gap-4">
             <input
-              className="flex-1 rounded-lg border-2 border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 px-4 py-3"
               type="text"
-              placeholder="Enter Unique ID to search"
               value={uniqueIdForFetch}
               onChange={(e) => setUniqueIdForFetch(e.target.value)}
+              placeholder="Enter Unique ID to search"
+              className="flex-1 rounded-xl bg-gray-800/50 border border-gray-700/50 
+                text-gray-300 placeholder-gray-500 
+                focus:border-purple-500 focus:ring-purple-500/20 
+                transition-all duration-300 px-4 py-3
+                hover:border-purple-500/50"
             />
             <button
               onClick={handleFetchCertificate}
-              className="px-8 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            >
+              className="px-8 bg-gradient-to-r from-purple-500 to-pink-500 
+                text-white rounded-xl transform transition-all duration-300 
+                hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25
+                active:scale-[0.98]">
               Search
             </button>
           </div>
+
           {fetchStatus && (
-            <p className={`mt-2 text-sm ${fetchStatus.includes("failed") ? "text-red-600" : "text-green-600"}`}>
+            <div className={`mt-4 text-sm ${fetchStatus.includes("failed") ? "text-red-400" : "text-green-400"}`}>
               {fetchStatus}
-            </p>
+            </div>
           )}
 
-          {/* Retrieved Certificate Display */}
+          {/* 证书信息显示 */}
           {retrievedCertificate && (
-            <div className="mt-8 space-y-6 animate-fadeIn">
-              <div className="flex items-center mb-6">
-                <span className="text-3xl mr-3">💎</span>
-                <h3 className="text-2xl font-semibold text-gray-800">Certificate Information</h3>
-              </div>
-              <div className="bg-gray-50 rounded-xl overflow-hidden border border-gray-200">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <tbody className="divide-y divide-gray-200">
-                    <tr className="hover:bg-gray-100 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap bg-gray-50 text-sm font-medium text-gray-900">
-                        Certificate ID
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {retrievedCertificate.certificateId}
-                      </td>
-                    </tr>
-                    <tr className="hover:bg-gray-100 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap bg-gray-50 text-sm font-medium text-gray-900">
-                        Unique ID
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {retrievedCertificate.uniqueId}
-                      </td>
-                    </tr>
-                    <tr className="hover:bg-gray-100 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap bg-gray-50 text-sm font-medium text-gray-900">
-                        Batch Code
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {retrievedCertificate.batchCode}
-                      </td>
-                    </tr>
-                    <tr className="hover:bg-gray-100 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap bg-gray-50 text-sm font-medium text-gray-900">
-                        State
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {retrievedCertificate.state}
-                      </td>
-                    </tr>
-                    <tr className="hover:bg-gray-100 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap bg-gray-50 text-sm font-medium text-gray-900">
-                        Price
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {retrievedCertificate.price}
-                      </td>
-                    </tr>
-                    <tr className="hover:bg-gray-100 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap bg-gray-50 text-sm font-medium text-gray-900">
-                        Description
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {retrievedCertificate.description}
-                      </td>
-                    </tr>
-                    <tr className="hover:bg-gray-100 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap bg-gray-50 text-sm font-medium text-gray-900">
-                        Production Date
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {retrievedCertificate.productionDate.toLocaleString()}
-                      </td>
-                    </tr>
-                    <tr className="hover:bg-gray-100 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap bg-gray-50 text-sm font-medium text-gray-900">
-                        Signature
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex justify-between items-center">
-                        {retrievedCertificate.signature.slice(0, 16) + "..."}
-                        <button
-                          onClick={async () => {
-                            try {
-                              const result = await certificateController.verifyCertificate(retrievedCertificate);
-                              alert(result ? "Signature verification successful!" : "Signature verification failed!");
-                            } catch (error: unknown) {
-                              alert("Verification error: " + (error instanceof Error ? error.message : String(error)));
-                            }
-                          }}
-                          className="ml-4 bg-gradient-to-r from-green-500 to-green-600 text-white py-2 px-4 rounded-lg transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:from-green-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-                        >
-                          Verify Signature
-                        </button>
-                      </td>
-                    </tr>
+            <div className="mt-8 animate-fadeIn">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-700/50">
+                  <tbody className="divide-y divide-gray-700/50">
+                    {[
+                      ["Certificate ID", retrievedCertificate.certificateId],
+                      ["Unique ID", retrievedCertificate.uniqueId],
+                      ["Batch Code", retrievedCertificate.batchCode],
+                      ["State", retrievedCertificate.state],
+                      ["Price", retrievedCertificate.price],
+                      ["Description", retrievedCertificate.description],
+                      ["Production Date", retrievedCertificate.productionDate.toLocaleString()],
+                      ["Signature", 
+                        <div key="signature" className="flex items-center justify-between">
+                          <span>{retrievedCertificate.signature.slice(0, 16) + "..."}</span>
+                          <button
+                            onClick={async () => {
+                              try {
+                                const result = await certificateController.verifyCertificate(retrievedCertificate);
+                                alert(result ? "Signature verification successful!" : "Signature verification failed!");
+                              } catch (error: unknown) {
+                                alert("Verification error: " + (error instanceof Error ? error.message : String(error)));
+                              }
+                            }}
+                            className="ml-4 bg-gradient-to-r from-green-500 to-emerald-500 
+                              text-white py-2 px-4 rounded-xl
+                              transform transition-all duration-300 
+                              hover:scale-105 hover:shadow-lg hover:shadow-green-500/25
+                              active:scale-[0.98]">
+                            Verify Signature
+                          </button>
+                        </div>
+                      ]
+                    ].map(([label, value]) => (
+                      <tr key={String(label)} className="group transition-colors duration-200 hover:bg-purple-500/5">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-300">
+                          {label}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                          {value}
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>

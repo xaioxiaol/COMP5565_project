@@ -227,10 +227,10 @@ export default function page() {
                     </div>
 
                     <div className="certificate-row">
-                      <span className="font-serif text-[#234e70] font-semibold">
-                        Signature:
-                      </span>
                       <div className="flex items-center gap-4">
+                        <span className="font-serif text-[#234e70] font-semibold">
+                          Signature:
+                        </span>
                         {/* <span className="text-gray-700"></span> */}
                         <button
                           onClick={async () => {
@@ -253,7 +253,7 @@ export default function page() {
                               );
                             }
                           }}
-                          className="transform transition-all duration-300 bg-[#234e70] text-white py-2 px-4 rounded-md 
+                          className="flex transform transition-all duration-300 bg-[#234e70] text-white py-2 px-4 rounded-md 
                             hover:bg-[#1a3a54] hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#234e70] focus:ring-offset-2"
                         >
                           Verify Signature:{" "}
@@ -267,7 +267,9 @@ export default function page() {
                   <div className="absolute bottom-4 right-4">
                     <div className="w-24 h-24 border-4 border-[#cc1818] rounded-full flex items-center justify-center rotate-12 opacity-80">
                       <div className="absolute inset-0 bg-[#ff0000] opacity-10 rounded-full"></div>
-                      <span className="font-serif text-[#cc1818] text-xs font-bold tracking-wider">VERIFIED</span>
+                      <span className="font-serif text-[#cc1818] text-xs font-bold tracking-wider">
+                        VERIFIED
+                      </span>
                     </div>
                   </div>
                 </div>

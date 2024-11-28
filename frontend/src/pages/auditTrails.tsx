@@ -2,17 +2,47 @@ import { useState } from "react";
 import { auditTrailController } from "@/controllers/AuditTrailController";
 import AuditRecord from "@/types/AuditRecord";
 
+const ROLES = [
+  "Mining Companies",
+  "Cutting Companies",
+  "Rating Labs",
+  "Manufacturers",
+  "Retailers",
+] as const;
+
+type Role = (typeof ROLES)[number];
+
+// 角色颜色映射函数
+const getRoleColor = (role: Role) => {
+  switch (role) {
+    case "Mining Companies":
+      return "bg-amber-100 text-amber-800 group-hover:bg-amber-200";
+    case "Cutting Companies":
+      return "bg-blue-100 text-blue-800 group-hover:bg-blue-200";
+    case "Rating Labs":
+      return "bg-purple-100 text-purple-800 group-hover:bg-purple-200";
+    case "Manufacturers":
+      return "bg-green-100 text-green-800 group-hover:bg-green-200";
+    case "Retailers":
+      return "bg-pink-100 text-pink-800 group-hover:bg-pink-200";
+    default:
+      return "bg-gray-100 text-gray-800 group-hover:bg-gray-200";
+  }
+};
+
 export default function AuditTrailsPage() {
   // Form states
   const [actorId, setActorId] = useState("");
   const [uniqueId, setUniqueId] = useState("");
   const [batchCode, setBatchCode] = useState("");
-  const [role, setRole] = useState("");
+  const [role, setRole] = useState<Role | "">("");
 
   // Query states
   const [queryUniqueId, setQueryUniqueId] = useState("");
   const [audits, setAudits] = useState<AuditRecord[]>([]);
   const [status, setStatus] = useState("");
+
+  const [selectedRole, setSelectedRole] = useState<Role | "">("");
 
   const addAuditRecord = async () => {
     try {
@@ -32,14 +62,18 @@ export default function AuditTrailsPage() {
       setRole("");
     } catch (error) {
       console.error(error);
-      setStatus(error instanceof Error ? error.message : "Failed to add record!");
+      setStatus(
+        error instanceof Error ? error.message : "Failed to add record!"
+      );
     }
   };
 
   const fetchAuditRecords = async () => {
     try {
       setStatus("Searching...");
-      const records = await auditTrailController.getAllAuditRecords(queryUniqueId);
+      const records = await auditTrailController.getAllAuditRecords(
+        queryUniqueId
+      );
       setAudits(records);
       setStatus("Search successful!");
     } catch (error) {
@@ -56,7 +90,9 @@ export default function AuditTrailsPage() {
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
             Audit Trail Management System
           </h1>
-          <p className="text-gray-600">Blockchain-based Audit Tracking Platform</p>
+          <p className="text-gray-600">
+            Blockchain-based Audit Tracking Platform
+          </p>
           {status && (
             <div
               className={`mt-4 text-sm ${
@@ -86,7 +122,9 @@ export default function AuditTrailsPage() {
                 />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">Add Audit Record</h2>
+            <h2 className="text-2xl font-bold text-gray-900">
+              Add Audit Record
+            </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -125,12 +163,39 @@ export default function AuditTrailsPage() {
             </div>
             <div className="space-y-1">
               <label className="text-sm font-medium text-gray-700">Role</label>
-              <input
-                type="text"
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-              />
+              <div className="relative">
+                <select
+                  value={role}
+                  onChange={(e) => setRole(e.target.value as Role)}
+                  className="w-full rounded-lg border-gray-300 shadow-sm 
+                    focus:border-indigo-500 focus:ring-indigo-500
+                    appearance-none bg-white pl-3 pr-10 py-2.5
+                    transition-all duration-300 hover:bg-gray-50"
+                >
+                  <option value="" disabled>
+                    Select Role
+                  </option>
+                  {ROLES.map((roleOption) => (
+                    <option key={roleOption} value={roleOption}>
+                      {roleOption}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                  <svg
+                    className="h-5 w-5 text-gray-400"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -160,7 +225,9 @@ export default function AuditTrailsPage() {
                 />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">Search Audit Record</h2>
+            <h2 className="text-2xl font-bold text-gray-900">
+              Search Audit Record
+            </h2>
           </div>
 
           <div className="flex gap-4">
@@ -177,6 +244,24 @@ export default function AuditTrailsPage() {
             >
               Search
             </button>
+            {/* 角色选择下拉框 */}
+            <div className="rounded-lg border border-gray-300 shadow-sm">
+              <div className="relative">
+                <select
+                  id="role"
+                  value={selectedRole}
+                  onChange={(e) => setSelectedRole(e.target.value as Role)}
+                  className="block w-full pl-3 pr-10 py-2.5 text-base border-gray-300 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm rounded-xl bg-white/70 backdrop-blur-sm transition-all duration-300 hover:bg-white/90"
+                >
+                  <option value="">All Roles</option>
+                  {ROLES.map((role) => (
+                    <option key={role} value={role}>
+                      {role}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
           </div>
 
           {/* Audit Records Display */}
@@ -202,26 +287,39 @@ export default function AuditTrailsPage() {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {audits.map((audit, index) => (
-                    <tr key={index} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {audit.actorId}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {audit.uniqueId}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {audit.batchCode}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {audit.role}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(audit.timestamp).toLocaleString()}
-                      </td>
-                    </tr>
-                  ))}
+                <tbody className="divide-y divide-purple-100">
+                  {audits
+                    .filter(
+                      (audit) => !selectedRole || audit.role === selectedRole
+                    )
+                    .map((audit, index) => (
+                      <tr
+                        key={index}
+                        className="group transition-all duration-200 hover:bg-purple-50/50 backdrop-blur-sm"
+                      >
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {audit.actorId}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {audit.uniqueId}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {audit.batchCode}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                          <span
+                            className={`inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-300 ${getRoleColor(
+                              audit.role as Role
+                            )}`}
+                          >
+                            {audit.role}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {new Date(audit.timestamp).toLocaleString()}
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>

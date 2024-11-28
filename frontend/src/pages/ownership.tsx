@@ -19,7 +19,7 @@ export default function OwnershipPage() {
   const fetchCertificateAndOwnership = async () => {
     try {
       setIsLoading(true);
-      setStatus("正在查询...");
+      setStatus("Querying...");
 
       const cert = await certificateController.getCertificate(queryUniqueId);
       setCertificate(cert);
@@ -31,10 +31,10 @@ export default function OwnershipPage() {
         setCurrentOwner("");
       }
 
-      setStatus("查询成功！");
+      setStatus("Query successful!");
     } catch (error) {
       console.error(error);
-      setStatus(error instanceof Error ? error.message : "查询失败！");
+      setStatus(error instanceof Error ? error.message : "Query failed!");
       setCertificate(null);
       setCurrentOwner("");
     } finally {
@@ -44,19 +44,19 @@ export default function OwnershipPage() {
 
   const transferOwnership = async () => {
     try {
-      setStatus("正在转让所有权...");
+      setStatus("Transferring ownership...");
       const newOwner = new Ownership(
         queryUniqueId,
         newOwnerAddress,
         Date.now()
       );
       await ownershipController.transferOwnership(queryUniqueId, newOwner);
-      setStatus("所有权转让成功！");
+      setStatus("Ownership transfer successful!");
       setNewOwnerAddress("");
       await fetchCertificateAndOwnership();
     } catch (error) {
       console.error(error);
-      setStatus(error instanceof Error ? error.message : "转让失败！");
+      setStatus(error instanceof Error ? error.message : "Transfer failed!");
     }
   };
 
@@ -76,7 +76,7 @@ export default function OwnershipPage() {
           currentOwner.toLowerCase() === currentUserAddress.toLowerCase();
         setIsOwner(isOwnerStatus);
       } catch (error) {
-        console.error("检查所有权失败:", error);
+        console.error("Check ownership failed:", error);
         setIsOwner(false);
       }
     };
@@ -85,48 +85,56 @@ export default function OwnershipPage() {
   }, [certificate, currentOwner]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-5xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-5">
+        <div className="absolute top-20 left-20 text-7xl transform rotate-12">💎</div>
+        <div className="absolute bottom-20 right-20 text-8xl transform -rotate-12">💎</div>
+      </div>
+
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            所有权管理系统
+          <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+            Ownership Management System
           </h1>
-          <p className="text-gray-600">基于区块链的所有权管理平台</p>
+          <p className="mt-3 text-gray-600">
+            Blockchain-based ownership management platform
+          </p>
           {status && (
-            <div
-              className={`mt-4 text-sm ${
-                status.includes("失败") ? "text-red-600" : "text-green-600"
-              }`}
-            >
+            <div className={`mt-4 text-sm ${status.includes("fail") ? "text-red-600" : "text-green-600"}`}>
               {status}
             </div>
           )}
         </div>
 
-        <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
+        <div className="bg-white rounded-xl shadow-xl p-8 mb-8 transform transition-all duration-300 hover:shadow-2xl">
+          <div className="flex items-center mb-6">
+            <span className="text-3xl mr-3">🔍</span>
+            <h2 className="text-2xl font-semibold text-gray-800">Query Certificate</h2>
+          </div>
           <div className="flex gap-4">
             <input
               type="text"
               value={queryUniqueId}
               onChange={(e) => setQueryUniqueId(e.target.value)}
-              placeholder="输入唯一标识 (Unique ID)"
-              className="flex-1 rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+              placeholder="Enter a unique ID (Unique ID)"
+              className="flex-1 rounded-lg border-2 border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 px-4 py-3"
             />
             <button
               onClick={fetchCertificateAndOwnership}
               disabled={isLoading}
-              className="px-8 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors duration-200 disabled:bg-gray-400"
+              className="px-8 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
-              {isLoading ? "查询中..." : "查询"}
+              {isLoading ? "Querying..." : "Query"}
             </button>
           </div>
 
           {certificate && (
             <div className="mt-8">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">
-                证书信息
-              </h3>
-              <div className="bg-gray-50 rounded-xl border border-gray-200 overflow-hidden">
+              <div className="flex items-center mb-6">
+                <span className="text-3xl mr-3">💎</span>
+                <h3 className="text-2xl font-semibold text-gray-800">Certificate Information</h3>
+              </div>
+              <div className="bg-gray-50 rounded-xl overflow-hidden border border-gray-200">
                 <table className="min-w-full divide-y divide-gray-200">
                   <tbody className="divide-y divide-gray-200">
                     <tr>
@@ -209,22 +217,23 @@ export default function OwnershipPage() {
 
               {isOwner && (
                 <div className="mt-8">
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">
-                    转让所有权
-                  </h3>
+                  <div className="flex items-center mb-6">
+                    <span className="text-3xl mr-3">🔄</span>
+                    <h3 className="text-2xl font-semibold text-gray-800">Transfer Ownership</h3>
+                  </div>
                   <div className="flex gap-4">
                     <input
                       type="text"
                       value={newOwnerAddress}
                       onChange={(e) => setNewOwnerAddress(e.target.value)}
-                      placeholder="输入新所有者的钱包地址"
-                      className="flex-1 rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                      placeholder="Enter the wallet address of the new owner"
+                      className="flex-1 rounded-lg border-2 border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 px-4 py-3"
                     />
                     <button
                       onClick={transferOwnership}
-                      className="px-8 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-200"
+                      className="px-8 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:from-green-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
                     >
-                      转让
+                      Transfer
                     </button>
                   </div>
                 </div>

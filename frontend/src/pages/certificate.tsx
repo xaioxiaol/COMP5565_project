@@ -7,7 +7,13 @@ import { ipfsService } from "@/utils/ipfs";
 import { certificateController } from "../controllers/CertificateController";
 
 export default function page() {
-  //   const [certificateController] = useState();
+  const [certificate, setCertificate] = useState<Certificate>(
+    new Certificate("", "", "", "", "", "", new Date(), "")
+  );
+  const [uniqueIdForFetch, setUniqueIdForFetch] = useState("");
+  const [retrievedCertificate, setRetrievedCertificate] = useState<Certificate | null>(null);
+  const [uploadStatus, setUploadStatus] = useState<string>("");
+  const [fetchStatus, setFetchStatus] = useState<string>("");
 
   const createCertificate = async (certificate: Certificate) => {
     console.log(certificate);
@@ -56,20 +62,6 @@ export default function page() {
     }
   };
 
-  // Certificate 实例，用于实时存储输入
-  const [certificate, setCertificate] = useState<Certificate>(
-    new Certificate("", "", "", "", "", "", new Date(), "")
-  );
-
-  // 用户输入的 uniqueId，用于检索
-  const [uniqueIdForFetch, setUniqueIdForFetch] = useState("");
-  const [retrievedCertificate, setRetrievedCertificate] =
-    useState<Certificate | null>(null);
-
-  // 上传状态
-  const [uploadStatus, setUploadStatus] = useState<string>("");
-  const [fetchStatus, setFetchStatus] = useState<string>("");
-
   // 表单输入处理：动态更新 Certificate
   const handleInputChange = (
     field: keyof Certificate,
@@ -115,77 +107,80 @@ export default function page() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 text-center mb-8">
-          Certificate Management System
-        </h1>
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+      {/* 装饰性钻石背景 */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-5">
+        <div className="absolute top-20 left-20 text-7xl transform rotate-12">💎</div>
+        <div className="absolute bottom-20 right-20 text-8xl transform -rotate-12">💎</div>
+      </div>
+
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+            Certificate Management System
+          </h1>
+          <p className="mt-3 text-gray-600">
+            Create and manage your diamond certificates with blockchain security
+          </p>
+        </div>
 
         {/* Add Certificate Form */}
-        <div className="bg-white shadow rounded-lg p-6 mb-8">
-          <h2 className="text-xl font-semibold text-gray-800 mb-6">
-            Add New Certificate
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-white rounded-xl shadow-xl p-8 mb-8 transform transition-all duration-300 hover:shadow-2xl">
+          <div className="flex items-center mb-6">
+            <span className="text-3xl mr-3">📜</span>
+            <h2 className="text-2xl font-semibold text-gray-800">Add New Certificate</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <input
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2"
+              className="block w-full rounded-lg border-2 border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 px-4 py-3"
               type="text"
               placeholder="Certificate ID"
               value={certificate.certificateId}
-              onChange={(e) =>
-                handleInputChange("certificateId", e.target.value)
-              }
+              onChange={(e) => handleInputChange("certificateId", e.target.value)}
             />
             <input
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2"
+              className="block w-full rounded-lg border-2 border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 px-4 py-3"
               type="text"
               placeholder="Unique ID"
               value={certificate.uniqueId}
               onChange={(e) => handleInputChange("uniqueId", e.target.value)}
             />
             <input
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2"
+              className="block w-full rounded-lg border-2 border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 px-4 py-3"
               type="text"
               placeholder="Batch Code"
               value={certificate.batchCode}
               onChange={(e) => handleInputChange("batchCode", e.target.value)}
             />
             <input
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2"
+              className="block w-full rounded-lg border-2 border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 px-4 py-3"
               type="text"
               placeholder="State"
               value={certificate.state}
               onChange={(e) => handleInputChange("state", e.target.value)}
             />
             <input
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2"
+              className="block w-full rounded-lg border-2 border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 px-4 py-3"
               type="text"
               placeholder="Price"
               value={certificate.price}
               onChange={(e) => handleInputChange("price", e.target.value)}
             />
             <input
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2"
+              className="block w-full rounded-lg border-2 border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 px-4 py-3"
               type="date"
               placeholder="Production Date"
-              value={
-                certificate.productionDate instanceof Date
-                  ? certificate.productionDate.toISOString().split("T")[0]
-                  : ""
-              }
-              onChange={(e) => {
-                const dateValue = e.target.value;
-                handleInputChange("productionDate", dateValue);
-              }}
+              value={certificate.productionDate instanceof Date ? certificate.productionDate.toISOString().split("T")[0] : ""}
+              onChange={(e) => handleInputChange("productionDate", e.target.value)}
             />
             <textarea
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2 md:col-span-2"
+              className="block w-full rounded-lg border-2 border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 px-4 py-3 md:col-span-2"
               placeholder="Description"
               value={certificate.description}
               onChange={(e) => handleInputChange("description", e.target.value)}
             />
             <input
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2 md:col-span-2"
+              className="block w-full rounded-lg border-2 border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 px-4 py-3 md:col-span-2"
               type="text"
               placeholder="Signature"
               value={certificate.signature}
@@ -194,118 +189,134 @@ export default function page() {
           </div>
           <button
             onClick={handleUploadCertificate}
-            className="mt-6 w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            className="mt-6 w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 px-4 rounded-lg transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
             Add Certificate
           </button>
+          {uploadStatus && (
+            <p className={`mt-2 text-sm ${uploadStatus.includes("failed") ? "text-red-600" : "text-green-600"}`}>
+              {uploadStatus}
+            </p>
+          )}
         </div>
 
         {/* Search Certificate Section */}
-        <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-6">Search Certificate</h2>
+        <div className="bg-white rounded-xl shadow-xl p-8 transform transition-all duration-300 hover:shadow-2xl">
+          <div className="flex items-center mb-6">
+            <span className="text-3xl mr-3">🔍</span>
+            <h2 className="text-2xl font-semibold text-gray-800">Search Certificate</h2>
+          </div>
           <div className="flex gap-4">
             <input
-              className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2"
+              className="flex-1 rounded-lg border-2 border-gray-200 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 px-4 py-3"
               type="text"
               placeholder="Enter Unique ID to search"
               value={uniqueIdForFetch}
               onChange={(e) => setUniqueIdForFetch(e.target.value)}
             />
             <button
-              onClick={() => handleFetchCertificate()}
-              className="bg-indigo-600 text-white py-2 px-6 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              onClick={handleFetchCertificate}
+              className="px-8 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
               Search
             </button>
           </div>
-          <p className="mt-2 text-sm text-gray-600">{fetchStatus}</p>
+          {fetchStatus && (
+            <p className={`mt-2 text-sm ${fetchStatus.includes("failed") ? "text-red-600" : "text-green-600"}`}>
+              {fetchStatus}
+            </p>
+          )}
 
           {/* Retrieved Certificate Display */}
           {retrievedCertificate && (
-            <div className="mt-6 overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <tbody className="divide-y divide-gray-200">
-                  <tr>
-                    <td className="px-6 py-4 whitespace-nowrap bg-gray-50 text-sm font-medium text-gray-900">
-                      Certificate ID
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {retrievedCertificate.certificateId}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-4 whitespace-nowrap bg-gray-50 text-sm font-medium text-gray-900">
-                      Unique ID
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {retrievedCertificate.uniqueId}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-4 whitespace-nowrap bg-gray-50 text-sm font-medium text-gray-900">
-                      Batch Code
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {retrievedCertificate.batchCode}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-4 whitespace-nowrap bg-gray-50 text-sm font-medium text-gray-900">
-                      State
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {retrievedCertificate.state}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-4 whitespace-nowrap bg-gray-50 text-sm font-medium text-gray-900">
-                      Price
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {retrievedCertificate.price}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-4 whitespace-nowrap bg-gray-50 text-sm font-medium text-gray-900">
-                      Description
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {retrievedCertificate.description}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-4 whitespace-nowrap bg-gray-50 text-sm font-medium text-gray-900">
-                      Production Date
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {retrievedCertificate.productionDate.toLocaleString()}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-4 whitespace-nowrap bg-gray-50 text-sm font-medium text-gray-900">
-                      Signature
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex justify-between items-center">
-                      {retrievedCertificate.signature.slice(0, 16) + "..."}
-                      <button
-                        onClick={async () => {
-                          try {
-                            const result = await certificateController.verifyCertificate(
-                              retrievedCertificate
-                            );
-                            alert(result ? "Signature verification successful!" : "Signature verification failed!");
-                          } catch (error: unknown) {
-                            alert("Verification error: " + (error instanceof Error ? error.message : String(error)));
-                          }
-                        }}
-                        className="ml-4 bg-green-600 text-white py-1 px-3 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-                      >
-                        Verify Signature
-                      </button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+            <div className="mt-8 space-y-6 animate-fadeIn">
+              <div className="flex items-center mb-6">
+                <span className="text-3xl mr-3">💎</span>
+                <h3 className="text-2xl font-semibold text-gray-800">Certificate Information</h3>
+              </div>
+              <div className="bg-gray-50 rounded-xl overflow-hidden border border-gray-200">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <tbody className="divide-y divide-gray-200">
+                    <tr className="hover:bg-gray-100 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap bg-gray-50 text-sm font-medium text-gray-900">
+                        Certificate ID
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {retrievedCertificate.certificateId}
+                      </td>
+                    </tr>
+                    <tr className="hover:bg-gray-100 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap bg-gray-50 text-sm font-medium text-gray-900">
+                        Unique ID
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {retrievedCertificate.uniqueId}
+                      </td>
+                    </tr>
+                    <tr className="hover:bg-gray-100 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap bg-gray-50 text-sm font-medium text-gray-900">
+                        Batch Code
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {retrievedCertificate.batchCode}
+                      </td>
+                    </tr>
+                    <tr className="hover:bg-gray-100 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap bg-gray-50 text-sm font-medium text-gray-900">
+                        State
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {retrievedCertificate.state}
+                      </td>
+                    </tr>
+                    <tr className="hover:bg-gray-100 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap bg-gray-50 text-sm font-medium text-gray-900">
+                        Price
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {retrievedCertificate.price}
+                      </td>
+                    </tr>
+                    <tr className="hover:bg-gray-100 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap bg-gray-50 text-sm font-medium text-gray-900">
+                        Description
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {retrievedCertificate.description}
+                      </td>
+                    </tr>
+                    <tr className="hover:bg-gray-100 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap bg-gray-50 text-sm font-medium text-gray-900">
+                        Production Date
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {retrievedCertificate.productionDate.toLocaleString()}
+                      </td>
+                    </tr>
+                    <tr className="hover:bg-gray-100 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap bg-gray-50 text-sm font-medium text-gray-900">
+                        Signature
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex justify-between items-center">
+                        {retrievedCertificate.signature.slice(0, 16) + "..."}
+                        <button
+                          onClick={async () => {
+                            try {
+                              const result = await certificateController.verifyCertificate(retrievedCertificate);
+                              alert(result ? "Signature verification successful!" : "Signature verification failed!");
+                            } catch (error: unknown) {
+                              alert("Verification error: " + (error instanceof Error ? error.message : String(error)));
+                            }
+                          }}
+                          className="ml-4 bg-gradient-to-r from-green-500 to-green-600 text-white py-2 px-4 rounded-lg transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:from-green-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                        >
+                          Verify Signature
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
         </div>

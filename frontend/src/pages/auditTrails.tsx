@@ -3,6 +3,7 @@ import { auditTrailController } from "@/controllers/AuditTrailController";
 import AuditRecord from "@/types/AuditRecord";
 
 const ROLES = [
+<<<<<<< Updated upstream
   "Mining Companies",
   "Cutting Companies",
   "Rating Labs",
@@ -29,13 +30,27 @@ const getRoleColor = (role: Role) => {
       return "bg-gray-100 text-gray-800 group-hover:bg-gray-200";
   }
 };
+=======
+  'Mining Companies',
+  'Cutting Companies',
+  'Rating Labs',
+  'Manufacturers',
+  'Retailers'
+] as const;
+
+type Role = typeof ROLES[number];
+>>>>>>> Stashed changes
 
 export default function AuditTrailsPage() {
   // Form states
   const [actorId, setActorId] = useState("");
   const [uniqueId, setUniqueId] = useState("");
   const [batchCode, setBatchCode] = useState("");
+<<<<<<< Updated upstream
   const [role, setRole] = useState<Role | "">("");
+=======
+  const [selectedRole, setSelectedRole] = useState<Role | ''>('');
+>>>>>>> Stashed changes
 
   // Query states
   const [queryUniqueId, setQueryUniqueId] = useState("");
@@ -51,7 +66,7 @@ export default function AuditTrailsPage() {
         actorId,
         uniqueId,
         batchCode,
-        role,
+        role: selectedRole,
       });
 
       setStatus("Record added successfully!");
@@ -59,7 +74,7 @@ export default function AuditTrailsPage() {
       setActorId("");
       setUniqueId("");
       setBatchCode("");
-      setRole("");
+      setSelectedRole('');
     } catch (error) {
       console.error(error);
       setStatus(
@@ -80,6 +95,23 @@ export default function AuditTrailsPage() {
       console.error(error);
       setStatus(error instanceof Error ? error.message : "Search failed!");
       setAudits([]);
+    }
+  };
+
+  const getRoleColor = (role: Role) => {
+    switch (role) {
+      case 'Mining Companies':
+        return 'bg-amber-100 text-amber-800 group-hover:bg-amber-200';
+      case 'Cutting Companies':
+        return 'bg-blue-100 text-blue-800 group-hover:bg-blue-200';
+      case 'Rating Labs':
+        return 'bg-purple-100 text-purple-800 group-hover:bg-purple-200';
+      case 'Manufacturers':
+        return 'bg-green-100 text-green-800 group-hover:bg-green-200';
+      case 'Retailers':
+        return 'bg-pink-100 text-pink-800 group-hover:bg-pink-200';
+      default:
+        return 'bg-gray-100 text-gray-800 group-hover:bg-gray-200';
     }
   };
 
@@ -161,6 +193,7 @@ export default function AuditTrailsPage() {
                 className="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               />
             </div>
+<<<<<<< Updated upstream
             <div className="space-y-1">
               <label className="text-sm font-medium text-gray-700">Role</label>
               <div className="relative">
@@ -178,10 +211,28 @@ export default function AuditTrailsPage() {
                   {ROLES.map((roleOption) => (
                     <option key={roleOption} value={roleOption}>
                       {roleOption}
+=======
+            <div className="mb-6">
+              <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-2">
+                Select Role
+              </label>
+              <div className="relative">
+                <select
+                  id="role"
+                  value={selectedRole}
+                  onChange={(e) => setSelectedRole(e.target.value as Role)}
+                  className="block w-full pl-3 pr-10 py-2.5 text-base border-gray-300 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm rounded-xl bg-white/70 backdrop-blur-sm transition-all duration-300 hover:bg-white/90"
+                >
+                  <option value="">All Roles</option>
+                  {ROLES.map((role) => (
+                    <option key={role} value={role}>
+                      {role}
+>>>>>>> Stashed changes
                     </option>
                   ))}
                 </select>
                 <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+<<<<<<< Updated upstream
                   <svg
                     className="h-5 w-5 text-gray-400"
                     viewBox="0 0 20 20"
@@ -193,6 +244,10 @@ export default function AuditTrailsPage() {
                       d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
                       clipRule="evenodd"
                     />
+=======
+                  <svg className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+>>>>>>> Stashed changes
                   </svg>
                 </div>
               </div>
@@ -266,6 +321,7 @@ export default function AuditTrailsPage() {
 
           {/* Audit Records Display */}
           {audits && audits.length > 0 && (
+<<<<<<< Updated upstream
             <div className="mt-8 overflow-hidden bg-gray-50 rounded-xl border border-gray-200">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-100">
@@ -322,6 +378,66 @@ export default function AuditTrailsPage() {
                     ))}
                 </tbody>
               </table>
+=======
+            <div className="mt-8 overflow-hidden rounded-xl border border-purple-200 bg-gradient-to-br from-purple-50/50 to-blue-50/50 backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:shadow-purple-200/40">
+              <div className="overflow-x-auto">
+                <table className="min-w-full">
+                  <thead>
+                    <tr className="bg-gradient-to-r from-purple-600/90 to-blue-600/90 text-white">
+                      <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                        Actor ID
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                        Unique ID
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                        Batch Code
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                        Role
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                        Timestamp
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-purple-100">
+                    {audits
+                      .filter(audit => !selectedRole || audit.role === selectedRole)
+                      .map((audit, index) => (
+                        <tr 
+                          key={index} 
+                          className="group transition-all duration-200 hover:bg-purple-50/50 backdrop-blur-sm"
+                        >
+                          <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <div className="flex items-center space-x-2">
+                              <span className="font-mono text-purple-600 group-hover:text-purple-800 transition-colors">
+                                {audit.actorId.slice(0, 8)}...{audit.actorId.slice(-6)}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 group-hover:text-gray-800">
+                            {audit.uniqueId}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 group-hover:bg-blue-200 transition-colors">
+                              {audit.batchCode}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <span className={`inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-300 ${getRoleColor(audit.role as Role)}`}>
+                              {audit.role}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 group-hover:text-gray-700">
+                            {new Date(audit.timestamp).toLocaleString()}
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+>>>>>>> Stashed changes
             </div>
           )}
         </div>
